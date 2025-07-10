@@ -31,27 +31,27 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 
 EOF
 
-# test secrets in playbook
-tee /tmp/test.yml << EOF
----
-- name: Setup podman and services
-  hosts: podman
-  gather_facts: true
-  tasks:
+# # test secrets in playbook
+# tee /tmp/test.yml << EOF
+# ---
+# - name: Setup podman and services
+#   hosts: podman
+#   gather_facts: true
+#   tasks:
 
-  - name: put password in /tmp
-    ansible.builtin.command:
-      cmd: echo "task {{ lookup('ansible.builtin.env', 'admin_password') }}" >> /tmp/passwd
+#   - name: put password in /tmp
+#     ansible.builtin.command:
+#       cmd: echo "task {{ lookup('ansible.builtin.env', 'admin_password') }}" >> /tmp/passwd
 
-...
-EOF
+# ...
+# EOF
 
-# chown files
-sudo chown rhel:rhel /tmp/test.yml
-sudo chown rhel:rhel /tmp/inventory
+# # chown files
+# sudo chown rhel:rhel /tmp/test.yml
+# sudo chown rhel:rhel /tmp/inventory
 
 # run above playbook
-su - rhel -c 'ansible-playbook -i /tmp/inventory /tmp/test.yml'
+# su - rhel -c 'ansible-playbook -i /tmp/inventory /tmp/test.yml'
 
 # # # creates a playbook to setup environment
 ###
@@ -62,8 +62,7 @@ su - rhel -c 'ansible-playbook -i /tmp/inventory /tmp/test.yml'
   connection: local
   collections:
     - ansible.controller
-  vars:
-    SANDBOX_ID: "{{ lookup('env', '_SANDBOX_ID') | default('SANDBOX_ID_NOT_FOUND', true) }}"
+
   tasks:
 
   - name: (EXECUTION) add rhel machine credential
@@ -165,7 +164,7 @@ su - rhel -c 'ansible-playbook -i /tmp/inventory /tmp/test.yml'
       description: "EDA project"
       organization: "Default"
       scm_type: git
-      scm_url: http://podman:3000/student/eda-project
+      scm_url: http://gitea:3000/student/eda-project
       state: present
       controller_host: "https://localhost"
       controller_username: admin
@@ -229,70 +228,57 @@ su - rhel -c 'ansible-playbook -i /tmp/inventory /tmp/test.yml'
       controller_password: ansible123!
       validate_certs: false
 
-  # - name: (DECISIONS) Create an AAP Credential
-  #   ansible.eda.credential:
-  #     name: "AAP"
-  #     description: "To execute jobs from EDA"
-  #     inputs:
-  #       host: "https://aap.{{ SANDBOX_ID }}.instruqt.io/api/controller/"
-  #       username: "admin"
-  #       password: "ansible123!"
-  #     credential_type_name: "Red Hat Ansible Automation Platform"
-  #     organization_name: Default
-  #     controller_host: https://localhost
-  #     controller_username: admin
-  #     controller_password: ansible123!
-  #     validate_certs: false
 
-  - name: (DECISIONS) Update EVENT_STREAM_BASE_URL in settings.yaml
-    ansible.builtin.lineinfile:
-      path: "/home/rhel/aap/eda/etc/settings.yaml"
-      regexp: "^EVENT_STREAM_BASE_URL:.*"
-      line: "EVENT_STREAM_BASE_URL: 'https://{{ ansible_hostname }}.{{ sandbox_id }}.instruqt.io/eda-event-streams'"
-      backrefs: yes
-    vars:
-      sandbox_id: "{{ lookup('env', '_SANDBOX_ID') }}"
 
-  - name: (DECISIONS) Restart EDA services as rhel user
-    become: true
-    become_user: rhel
-    ansible.builtin.systemd_service:
-      scope: user
-      name: "{{ item }}"
-      state: restarted
-    loop:
-      - automation-eda-activation-worker-1.service
-      - automation-eda-activation-worker-2.service
-      - automation-eda-api.service
-      - automation-eda-daphne.service
-      - automation-eda-scheduler.service
-      - automation-eda-web.service
-      - automation-eda-worker-1.service
-      - automation-eda-worker-2.service
-    register: restart_services
-    until: restart_services is not failed
-    retries: 5
-    delay: 10
+  # - name: (DECISIONS) Update EVENT_STREAM_BASE_URL in settings.yaml
+  #   ansible.builtin.lineinfile:
+  #     path: "/home/rhel/aap/eda/etc/settings.yaml"
+  #     regexp: "^EVENT_STREAM_BASE_URL:.*"
+  #     line: "EVENT_STREAM_BASE_URL: 'https://{{ ansible_hostname }}.{{ sandbox_id }}.instruqt.io/eda-event-streams'"
+  #     backrefs: yes
+  #   vars:
+  #     sandbox_id: "{{ lookup('env', '_SANDBOX_ID') }}"
+
+  # - name: (DECISIONS) Restart EDA services as rhel user
+  #   become: true
+  #   become_user: rhel
+  #   ansible.builtin.systemd_service:
+  #     scope: user
+  #     name: "{{ item }}"
+  #     state: restarted
+  #   loop:
+  #     - automation-eda-activation-worker-1.service
+  #     - automation-eda-activation-worker-2.service
+  #     - automation-eda-api.service
+  #     - automation-eda-daphne.service
+  #     - automation-eda-scheduler.service
+  #     - automation-eda-web.service
+  #     - automation-eda-worker-1.service
+  #     - automation-eda-worker-2.service
+  #   register: restart_services
+  #   until: restart_services is not failed
+  #   retries: 5
+  #   delay: 10
 
 
 ###
-### RHEL nodes setup 
-###
+# ### RHEL nodes setup 
+# ###
 - name: Setup rhel nodes
   hosts: nodes
   become: true
   tasks:
 
-    - name: Add search to resolv.conf
-      ansible.builtin.shell:
-        cmd: echo "search $_SANDBOX_ID.svc.cluster.local." >> /etc/resolv.conf
-      become: true
+    # - name: Add search to resolv.conf
+    #   ansible.builtin.shell:
+    #     cmd: echo "search $_SANDBOX_ID.svc.cluster.local." >> /etc/resolv.conf
+    #   become: true
 
-    - name: Install epel-release
-      ansible.builtin.dnf:
-        name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
-        state: present
-        disable_gpg_check: true
+    # - name: Install epel-release
+    #   ansible.builtin.dnf:
+    #     name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+    #     state: present
+    #     disable_gpg_check: true
 
     - name: Install packages
       ansible.builtin.dnf:
@@ -315,7 +301,7 @@ su - rhel -c 'ansible-playbook -i /tmp/inventory /tmp/test.yml'
         cmd: podman-compose up -d
         chdir: /tmp/eda-alertmanager/node_exporter
 
-...
-EOF
+# ...
+# EOF
 
 ANSIBLE_COLLECTIONS_PATH=/tmp/ansible-automation-platform-containerized-setup-bundle-2.5-9-x86_64/collections/:/root/.ansible/collections/ansible_collections/ ansible-playbook -i /tmp/inventory /tmp/setup.yml
