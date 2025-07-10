@@ -7,53 +7,153 @@ systemctl disable systemd-tmpfiles-setup.service
 ansible-galaxy collection install ansible.eda
 ansible-galaxy collection install community.general
 
-# # ## setup rhel user
-# touch /etc/sudoers.d/rhel_sudoers
-# echo "%rhel ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/rhel_sudoers
-# cp -a /root/.ssh/* /home/$USER/.ssh/.
-# chown -R rhel:rhel /home/$USER/.ssh
+# test secrets in playbook
+tee /tmp/test.yml << EOF
+---
+- name: Setup podman and services
+  hosts: podman
+  gather_facts: true
+  tasks:
 
-tee /tmp/inventory << EOF
-[nodes]
-rhel-1
-rhel-2
+  - name: put password in /tmp
+    ansible.builtin.command:
+      cmd: echo "task {{ lookup('ansible.builtin.env', 'admin_password') }}" >> /tmp/passwd
 
-[all]
-podman
-rhel-1
-rhel-2
-aap
-
-[all:vars]
-ansible_user = rhel
-ansible_password = ansible123!
-ansible_ssh_common_args='-o StrictHostKeyChecking=no'
-
+...
 EOF
 
-# # test secrets in playbook
-# tee /tmp/test.yml << EOF
-# ---
-# - name: Setup podman and services
-#   hosts: podman
-#   gather_facts: true
-#   tasks:
+# chown files
+sudo chown rhel:rhel /tmp/test.yml
+sudo chown rhel:rhel /tmp/inventory
 
-#   - name: put password in /tmp
-#     ansible.builtin.command:
-#       cmd: echo "task {{ lookup('ansible.builtin.env', 'admin_password') }}" >> /tmp/passwd
-
-# ...
-# EOF
-
-# # chown files
-# sudo chown rhel:rhel /tmp/test.yml
-# sudo chown rhel:rhel /tmp/inventory
-
-# run above playbook
+# # run above playbook
 # su - rhel -c 'ansible-playbook -i /tmp/inventory /tmp/test.yml'
+ANSIBLE_COLLECTIONS_PATH=/tmp/ansible-automation-platform-containerized-setup-bundle-2.5-9-x86_64/collections/:/root/.ansible/collections/ansible_collections/ ansible-playbook -i /tmp/inventory /tmp/test.yml
 
-# # # creates a playbook to setup environment
+
+# creates a playbook to setup environment
+tee /tmp/setup.yml << EOF
+---
+###
+### Podman setup 
+###
+- name: Setup podman and services
+  hosts: podman
+  gather_facts: no
+  tasks:
+
+    # - name: Add search to resolv.conf
+    #   ansible.builtin.shell:
+    #     cmd: echo "search $_SANDBOX_ID.svc.cluster.local." >> /etc/resolv.conf
+    #   become: true
+
+    # - name: Install EPEL
+    #   ansible.builtin.package:
+    #     name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+    #     state: present
+    #     disable_gpg_check: true
+    #   become: true
+
+    # - name: Install required packages
+    #   ansible.builtin.package:
+    #     name: "{{ item }}"
+    #     state: present
+    #   loop:
+    #     - git
+    #     - tmux
+    #     - podman-compose
+    #   become: true
+
+    # - name: Clone gitea podman-compose project
+    #   ansible.builtin.git:
+    #     repo: https://github.com/cloin/gitea-podman.git
+    #     dest: /tmp/gitea-podman
+    #     force: true
+
+    # - name: Allow user to linger
+    #   ansible.builtin.command: 
+    #     cmd: loginctl enable-linger rhel
+    #     chdir: /tmp/gitea-podman
+
+    # - name: Start gitea
+    #   ansible.builtin.command: 
+    #     cmd: podman-compose up -d
+    #     chdir: /tmp/gitea-podman
+
+    # - name: Wait for gitea to start
+    #   ansible.builtin.pause:
+    #     seconds: 15
+
+    # - name: Create gitea student user
+    #   ansible.builtin.shell:
+    #     cmd: podman exec -u git gitea /usr/local/bin/gitea admin user create --admin --username student --password learn_ansible --email student@example.com
+
+    # - name: Create gitea ansible user
+    #   ansible.builtin.shell:
+    #     cmd: podman exec -u git gitea /usr/local/bin/gitea admin user create --admin --username ansible --password learn_ansible --email ansible@example.com
+
+    # - name: Migrate github projects to gitea student user
+    #   ansible.builtin.uri:
+    #     url: http://podman:3000/api/v1/repos/migrate
+    #     method: POST
+    #     body_format: json
+    #     body: {"clone_addr": "{{ item.url }}", "repo_name": "{{ item.name }}"}
+    #     status_code: [201, 409]
+    #     headers:
+    #       Content-Type: "application/json"
+    #     user: student
+    #     password: learn_ansible
+    #     force_basic_auth: yes
+    #     validate_certs: no
+    #   loop:
+    #     - {name: 'eda-project', url: 'https://github.com/cloin/eda-project-basic.git'}
+    #     - {name: 'eda-alertmanager', url: 'https://github.com/cloin/eda-alertmanager.git'}
+
+    # - name: Set the default branch to aap25 for migrated repositories
+    #   ansible.builtin.uri:
+    #     url: "http://podman:3000/api/v1/repos/student/{{ item.name }}"
+    #     method: PATCH
+    #     body_format: json
+    #     body:
+    #       default_branch: "aap25"
+    #     headers:
+    #       Content-Type: "application/json"
+    #     user: student
+    #     password: learn_ansible
+    #     force_basic_auth: yes
+    #     validate_certs: no
+    #   loop:
+    #     - { name: 'eda-project' }
+    #     - { name: 'eda-alertmanager' }
+    #   delegate_to: localhost
+
+    - name: Clone the specific branch from the migrated repo
+      ansible.builtin.git:
+        repo: "http://gitea:3000/student/{{ item.item.name }}.git"
+        dest: "/tmp/{{ item.item.name }}"
+        version: "{{ item.branch | default('main') }}"
+        force: true
+      loop:
+        - {item: {name: 'eda-alertmanager'}, branch: 'aap25'}
+        - {item: {name: 'eda-project'}, branch: 'aap25'}
+
+    - name: Start node_exporter and webhook services with podman-compose
+      ansible.builtin.command:
+        cmd: podman-compose up -d
+        chdir: "/tmp/eda-alertmanager/{{ item }}"
+      loop:
+        - node_exporter
+        # - webhook
+
+    # - name: Wait for services to start
+    #   ansible.builtin.pause:
+    #     seconds: 15
+
+    - name: Start prometheus with podman-compose
+      ansible.builtin.command: 
+        cmd: podman-compose up -d
+        chdir: /tmp/eda-alertmanager/prometheus
+
 ###
 ### Automation Controller setup 
 ###
@@ -62,7 +162,8 @@ EOF
   connection: local
   collections:
     - ansible.controller
-
+  vars:
+    SANDBOX_ID: "{{ lookup('env', '_SANDBOX_ID') | default('SANDBOX_ID_NOT_FOUND', true) }}"
   tasks:
 
   - name: (EXECUTION) add rhel machine credential
@@ -228,57 +329,70 @@ EOF
       controller_password: ansible123!
       validate_certs: false
 
+  # - name: (DECISIONS) Create an AAP Credential
+  #   ansible.eda.credential:
+  #     name: "AAP"
+  #     description: "To execute jobs from EDA"
+  #     inputs:
+  #       host: "https://aap.{{ SANDBOX_ID }}.instruqt.io/api/controller/"
+  #       username: "admin"
+  #       password: "ansible123!"
+  #     credential_type_name: "Red Hat Ansible Automation Platform"
+  #     organization_name: Default
+  #     controller_host: https://localhost
+  #     controller_username: admin
+  #     controller_password: ansible123!
+  #     validate_certs: false
 
+  - name: (DECISIONS) Update EVENT_STREAM_BASE_URL in settings.yaml
+    ansible.builtin.lineinfile:
+      path: "/home/rhel/aap/eda/etc/settings.yaml"
+      regexp: "^EVENT_STREAM_BASE_URL:.*"
+      line: "EVENT_STREAM_BASE_URL: 'https://{{ ansible_hostname }}.{{ sandbox_id }}.instruqt.io/eda-event-streams'"
+      backrefs: yes
+    vars:
+      sandbox_id: "{{ lookup('env', '_SANDBOX_ID') }}"
 
-  # - name: (DECISIONS) Update EVENT_STREAM_BASE_URL in settings.yaml
-  #   ansible.builtin.lineinfile:
-  #     path: "/home/rhel/aap/eda/etc/settings.yaml"
-  #     regexp: "^EVENT_STREAM_BASE_URL:.*"
-  #     line: "EVENT_STREAM_BASE_URL: 'https://{{ ansible_hostname }}.{{ sandbox_id }}.instruqt.io/eda-event-streams'"
-  #     backrefs: yes
-  #   vars:
-  #     sandbox_id: "{{ lookup('env', '_SANDBOX_ID') }}"
-
-  # - name: (DECISIONS) Restart EDA services as rhel user
-  #   become: true
-  #   become_user: rhel
-  #   ansible.builtin.systemd_service:
-  #     scope: user
-  #     name: "{{ item }}"
-  #     state: restarted
-  #   loop:
-  #     - automation-eda-activation-worker-1.service
-  #     - automation-eda-activation-worker-2.service
-  #     - automation-eda-api.service
-  #     - automation-eda-daphne.service
-  #     - automation-eda-scheduler.service
-  #     - automation-eda-web.service
-  #     - automation-eda-worker-1.service
-  #     - automation-eda-worker-2.service
-  #   register: restart_services
-  #   until: restart_services is not failed
-  #   retries: 5
-  #   delay: 10
+  - name: (DECISIONS) Restart EDA services as rhel user
+    become: true
+    become_user: rhel
+    ansible.builtin.systemd_service:
+      scope: user
+      name: "{{ item }}"
+      state: restarted
+    loop:
+      - automation-eda-activation-worker-1.service
+      - automation-eda-activation-worker-2.service
+      - automation-eda-api.service
+      - automation-eda-daphne.service
+      - automation-eda-scheduler.service
+      - automation-eda-web.service
+      - automation-eda-worker-1.service
+      - automation-eda-worker-2.service
+    register: restart_services
+    until: restart_services is not failed
+    retries: 5
+    delay: 10
 
 
 ###
-# ### RHEL nodes setup 
-# ###
+### RHEL nodes setup 
+###
 - name: Setup rhel nodes
   hosts: nodes
   become: true
   tasks:
 
-    # - name: Add search to resolv.conf
-    #   ansible.builtin.shell:
-    #     cmd: echo "search $_SANDBOX_ID.svc.cluster.local." >> /etc/resolv.conf
-    #   become: true
+    - name: Add search to resolv.conf
+      ansible.builtin.shell:
+        cmd: echo "search $_SANDBOX_ID.svc.cluster.local." >> /etc/resolv.conf
+      become: true
 
-    # - name: Install epel-release
-    #   ansible.builtin.dnf:
-    #     name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
-    #     state: present
-    #     disable_gpg_check: true
+    - name: Install epel-release
+      ansible.builtin.dnf:
+        name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+        state: present
+        disable_gpg_check: true
 
     - name: Install packages
       ansible.builtin.dnf:
@@ -301,7 +415,10 @@ EOF
         cmd: podman-compose up -d
         chdir: /tmp/eda-alertmanager/node_exporter
 
-# ...
-# EOF
+...
+EOF
+
+# chown files
+sudo chown rhel:rhel /tmp/setup.yml
 
 ANSIBLE_COLLECTIONS_PATH=/tmp/ansible-automation-platform-containerized-setup-bundle-2.5-9-x86_64/collections/:/root/.ansible/collections/ansible_collections/ ansible-playbook -i /tmp/inventory /tmp/setup.yml
