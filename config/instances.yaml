@@ -158,7 +158,7 @@ virtualmachines:
         - systemctl reload sshd
 
   - name: "rhel-2"
-    image: "rhel-8.7"
+    image: "rhel-9.5"
     memory: "2G"
     cores: 2
     image_size: "30Gi"
