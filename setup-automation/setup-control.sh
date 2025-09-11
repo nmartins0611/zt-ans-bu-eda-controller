@@ -287,7 +287,7 @@ tee /tmp/setup.yml << EOF
       description: "EDA project"
       organization: "Default"
       scm_type: git
-      scm_url: http://podman:3000/student/eda-project
+      scm_url: http://gitea:3000/student/eda-project
       state: present
       controller_host: "https://localhost"
       controller_username: admin
@@ -444,7 +444,7 @@ tee /tmp/setup.yml << EOF
 
     - name: Clone eda-alertmanager repository
       ansible.builtin.git:
-        repo: http://podman:3000/student/eda-alertmanager.git
+        repo: http://gitea:3000/student/eda-alertmanager.git
         dest: /tmp/eda-alertmanager
 
     - name: Allow user to linger
