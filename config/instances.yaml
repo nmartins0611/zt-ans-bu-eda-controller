@@ -140,7 +140,7 @@ virtualmachines:
           -----END CERTIFICATE-----
   - name: "rhel-1"
     image: "rhel-9.5"
-    memory: "2G"
+    memory: "4G"
     cores: 2
     image_size: "30Gi"
     tags:
@@ -159,7 +159,7 @@ virtualmachines:
 
   - name: "rhel-2"
     image: "rhel-9.5"
-    memory: "2G"
+    memory: "4G"
     cores: 2
     image_size: "30Gi"
     tags:
@@ -167,32 +167,18 @@ virtualmachines:
         value: "isolated"
     networks:
       - default
-    services:
-      - name: node02-http
-        ports:
-          - port: 80
-            protocol: TCP
-            targetPort: 80
-            name: node02
-    routes:
-      - name: node02-web
-        host: node02
-        service: node02-http
-        targetPort: 80
-        tls: true  ## To resolve https/http Framing
-        tls_termination: Edge ## To resolve https/http Framing
     userdata: |-
       #cloud-config
       user: rhel
       password: ansible123!
-      chpasswd: { expire: False }
+      chpasswd: { expire: False }  
       runcmd:
-        - sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/" /etc/ssh/sshd_config
+        - echo "PasswordAuthentication yes" > /etc/ssh/sshd_config.d/50-cloud-init.conf
         - systemctl reload sshd
         
   - name: "podman"
     image: "rhel-9.5"
-    memory: "2G"
+    memory: "4G"
     cores: 2
     image_size: "30Gi"
     tags:
@@ -201,16 +187,16 @@ virtualmachines:
     networks:
       - default
     services:
-      - name: node03-http
+      - name: podman-http
         ports:
           - port: 80
             protocol: TCP
             targetPort: 80
             name: node03
     routes:
-      - name: node03-web
-        host: node03
-        service: node03-http
+      - name: podman-web
+        host: podman
+        service: podman-http
         targetPort: 80
         tls: true
         tls_termination: Edge
