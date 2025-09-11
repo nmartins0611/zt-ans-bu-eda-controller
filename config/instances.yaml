@@ -133,7 +133,7 @@ virtualmachines:
           fH5qke1XR5LFGpndX1GuSVBhdZq94x0aGXWTQCDNIPQ3QtrQ64PBF1vRFdJ6o/FI
           uEOWpQhGYHMC0A==
           -----END CERTIFICATE-----
-  - name: "node01"
+  - name: "rhel-1"
     image: "rhel-9.5"
     memory: "2G"
     cores: 2
@@ -152,7 +152,7 @@ virtualmachines:
         - echo "PasswordAuthentication yes" > /etc/ssh/sshd_config.d/50-cloud-init.conf
         - systemctl reload sshd
 
-  - name: "node02"
+  - name: "rhel-2"
     image: "rhel-8.7"
     memory: "2G"
     cores: 2
@@ -185,7 +185,7 @@ virtualmachines:
         - sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/" /etc/ssh/sshd_config
         - systemctl reload sshd
         
-  - name: "node03"
+  - name: "podman"
     image: "rhel-9.5"
     memory: "2G"
     cores: 2
@@ -217,42 +217,3 @@ virtualmachines:
       runcmd:
         - echo "PasswordAuthentication yes" > /etc/ssh/sshd_config.d/50-cloud-init.conf
         - systemctl reload sshd
-
-  - name: "windows"
-    image: "base-windows-ad-2022.qcow2"
-    memory: "16G"
-    cores: 4
-    image_size: "60Gi"
-    tags:
-      - key: "AnsibleGroup"
-        value: "isolated"
-    interface_model: "e1000e"
-    networks:
-      - default
-    services:
-      - name: windows
-        ports:
-          - port: 5986
-            protocol: TCP
-            targetPort: 5986
-            name: windows
-            
-      - name: windows-rdp
-        ports:
-          - port: 3389
-            protocol: TCP
-            targetPort: 3389
-            name: windows-rdp
-      - name: iis
-        ports:
-          - port: 80
-            protocol: TCP
-            targetPort: 80
-            name: iis
-    routes:
-      - name: windows
-        host: windows
-        service: iis
-        targetPort: 80
-        tls: true
-        tls_termination: Edge
