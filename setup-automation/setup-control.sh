@@ -140,8 +140,8 @@ tee /tmp/setup.yml << EOF
           default_branch: "aap25"
         headers:
           Content-Type: "application/json"
-        user: student
-        password: learn_ansible
+        user: gitea
+        password: gitea
         force_basic_auth: yes
         validate_certs: no
       loop:
