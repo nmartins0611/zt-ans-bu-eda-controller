@@ -86,54 +86,54 @@ tee /tmp/setup.yml << EOF
         - python3-dotenv
       become: true
 
-    - name: Clone gitea podman-compose project
-      ansible.builtin.git:
-        repo: https://github.com/cloin/gitea-podman.git
-        dest: /tmp/gitea-podman
-        force: true
+    # - name: Clone gitea podman-compose project
+    #   ansible.builtin.git:
+    #     repo: https://github.com/cloin/gitea-podman.git
+    #     dest: /tmp/gitea-podman
+    #     force: true
 
     - name: Allow user to linger
       ansible.builtin.command: 
         cmd: loginctl enable-linger rhel
         chdir: /tmp/gitea-podman
 
-    - name: Start gitea
-      ansible.builtin.command: 
-        cmd: podman-compose up -d
-        chdir: /tmp/gitea-podman
+    # - name: Start gitea
+    #   ansible.builtin.command: 
+    #     cmd: podman-compose up -d
+    #     chdir: /tmp/gitea-podman
 
-    - name: Wait for gitea to start
-      ansible.builtin.pause:
-        seconds: 15
+    # - name: Wait for gitea to start
+    #   ansible.builtin.pause:
+    #     seconds: 15
 
-    - name: Create gitea student user
-      ansible.builtin.shell:
-        cmd: podman exec -u git gitea /usr/local/bin/gitea admin user create --admin --username student --password learn_ansible --email student@example.com
+    # - name: Create gitea student user
+    #   ansible.builtin.shell:
+    #     cmd: podman exec -u git gitea /usr/local/bin/gitea admin user create --admin --username student --password learn_ansible --email student@example.com
 
-    - name: Create gitea ansible user
-      ansible.builtin.shell:
-        cmd: podman exec -u git gitea /usr/local/bin/gitea admin user create --admin --username ansible --password learn_ansible --email ansible@example.com
+    # - name: Create gitea ansible user
+    #   ansible.builtin.shell:
+    #     cmd: podman exec -u git gitea /usr/local/bin/gitea admin user create --admin --username ansible --password learn_ansible --email ansible@example.com
 
-    - name: Migrate github projects to gitea student user
-      ansible.builtin.uri:
-        url: http://podman:3000/api/v1/repos/migrate
-        method: POST
-        body_format: json
-        body: {"clone_addr": "{{ item.url }}", "repo_name": "{{ item.name }}"}
-        status_code: [201, 409]
-        headers:
-          Content-Type: "application/json"
-        user: student
-        password: learn_ansible
-        force_basic_auth: yes
-        validate_certs: no
-      loop:
-        - {name: 'eda-project', url: 'https://github.com/cloin/eda-project-basic.git'}
-        - {name: 'eda-alertmanager', url: 'https://github.com/cloin/eda-alertmanager.git'}
+    # - name: Migrate github projects to gitea student user
+    #   ansible.builtin.uri:
+    #     url: http://podman:3000/api/v1/repos/migrate
+    #     method: POST
+    #     body_format: json
+    #     body: {"clone_addr": "{{ item.url }}", "repo_name": "{{ item.name }}"}
+    #     status_code: [201, 409]
+    #     headers:
+    #       Content-Type: "application/json"
+    #     user: student
+    #     password: learn_ansible
+    #     force_basic_auth: yes
+    #     validate_certs: no
+    #   loop:
+    #     - {name: 'eda-project', url: 'https://github.com/cloin/eda-project-basic.git'}
+    #     - {name: 'eda-alertmanager', url: 'https://github.com/cloin/eda-alertmanager.git'}
 
     - name: Set the default branch to aap25 for migrated repositories
       ansible.builtin.uri:
-        url: "http://podman:3000/api/v1/repos/student/{{ item.name }}"
+        url: "http://gitea:3000/api/v1/repos/student/{{ item.name }}"
         method: PATCH
         body_format: json
         body:
@@ -151,7 +151,7 @@ tee /tmp/setup.yml << EOF
 
     - name: Clone the specific branch from the migrated repo
       ansible.builtin.git:
-        repo: "http://podman:3000/student/{{ item.item.name }}.git"
+        repo: "http://gitea:3000/student/{{ item.item.name }}.git"
         dest: "/tmp/{{ item.item.name }}"
         version: "{{ item.branch | default('main') }}"
         force: true
