@@ -92,10 +92,10 @@ tee /tmp/setup.yml << EOF
     #     dest: /tmp/gitea-podman
     #     force: true
 
-    - name: Allow user to linger
-      ansible.builtin.command: 
-        cmd: loginctl enable-linger rhel
-        chdir: /tmp/gitea-podman
+    # - name: Allow user to linger
+    #   ansible.builtin.command: 
+    #     cmd: loginctl enable-linger rhel
+    #     chdir: /tmp/gitea-podman
 
     # - name: Start gitea
     #   ansible.builtin.command: 
