@@ -48,83 +48,83 @@ tee /tmp/setup.yml << EOF
 ###
 ### Podman setup 
 ###
-- name: Setup podman and services
-  hosts: podman
-  gather_facts: no
-  #become: true
-  tasks:
+# - name: Setup podman and services
+#   hosts: podman
+#   gather_facts: no
+#   #become: true
+#   tasks:
 
-    - name: Install EPEL
-      ansible.builtin.package:
-        name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
-        state: present
-        disable_gpg_check: true
-      become: true
+#     - name: Install EPEL
+#       ansible.builtin.package:
+#         name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+#         state: present
+#         disable_gpg_check: true
+#       become: true
 
-      ## Lab Fix
-    - name: Ensure crun is updated to the latest available version
-      ansible.builtin.dnf:
-        name: crun
-        state: latest
-      become: true
+#       ## Lab Fix
+#     - name: Ensure crun is updated to the latest available version
+#       ansible.builtin.dnf:
+#         name: crun
+#         state: latest
+#       become: true
 
 
-    - name: Install required packages
-      ansible.builtin.package:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - git
-        - tmux
-        - python3-pip
-        - podman-compose
-        - python3-dotenv
-      become: true
+#     - name: Install required packages
+#       ansible.builtin.package:
+#         name: "{{ item }}"
+#         state: present
+#       loop:
+#         - git
+#         - tmux
+#         - python3-pip
+#         - podman-compose
+#         - python3-dotenv
+#       become: true
 
-    - name: Set the default branch to aap25 for migrated repositories
-      ansible.builtin.uri:
-        url: "http://gitea:3000/api/v1/repos/student/{{ item.name }}"
-        method: PATCH
-        body_format: json
-        body:
-          default_branch: "aap25"
-        headers:
-          Content-Type: "application/json"
-        user: gitea
-        password: gitea
-        force_basic_auth: yes
-        validate_certs: no
-      loop:
-        - { name: 'eda-project' }
-        - { name: 'eda-alertmanager' }
-      delegate_to: localhost
+#     - name: Set the default branch to aap25 for migrated repositories
+#       ansible.builtin.uri:
+#         url: "http://gitea:3000/api/v1/repos/student/{{ item.name }}"
+#         method: PATCH
+#         body_format: json
+#         body:
+#           default_branch: "aap25"
+#         headers:
+#           Content-Type: "application/json"
+#         user: gitea
+#         password: gitea
+#         force_basic_auth: yes
+#         validate_certs: no
+#       loop:
+#         - { name: 'eda-project' }
+#         - { name: 'eda-alertmanager' }
+#       delegate_to: localhost
 
-    - name: Clone the specific branch from the migrated repo
-      ansible.builtin.git:
-        repo: "http://gitea:3000/student/{{ item.item.name }}.git"
-        dest: "/tmp/{{ item.item.name }}"
-        version: "{{ item.branch | default('main') }}"
-        force: true
-      loop:
-        - {item: {name: 'eda-alertmanager'}, branch: 'aap25'}
-        - {item: {name: 'eda-project'}, branch: 'aap25'}
+#     - name: Clone the specific branch from the migrated repo
+#       ansible.builtin.git:
+#         repo: "http://gitea:3000/student/{{ item.item.name }}.git"
+#         dest: "/tmp/{{ item.item.name }}"
+#         version: "{{ item.branch | default('main') }}"
+#         force: true
+#       loop:
+#         - {item: {name: 'eda-alertmanager'}, branch: 'aap25'}
+#         - {item: {name: 'eda-project'}, branch: 'aap25'}
 
-    - name: Start node_exporter and webhook services with podman-compose
-      ansible.builtin.command:
-        cmd: podman-compose up -d
-        chdir: "/tmp/eda-alertmanager/{{ item }}"
-      loop:
-        - node_exporter
-        # - webhook
+#     - name: Start node_exporter and webhook services with podman-compose
+#       ansible.builtin.command:
+#         cmd: podman-compose up -d
+#         chdir: "/tmp/eda-alertmanager/{{ item }}"
+#       loop:
+#         - node_exporter
+#         # - webhook
 
-    # - name: Wait for services to start
-    #   ansible.builtin.pause:
-    #     seconds: 15
+#     # - name: Wait for services to start
+#     #   ansible.builtin.pause:
+#     #     seconds: 15
 
-    - name: Start prometheus with podman-compose
-      ansible.builtin.command: 
-        cmd: podman-compose up -d
-        chdir: /tmp/eda-alertmanager/prometheus
+#     - name: Start prometheus with podman-compose
+#       ansible.builtin.command: 
+#         cmd: podman-compose up -d
+#         chdir: /tmp/eda-alertmanager/prometheus
 
 ###
 ### Automation Controller setup 
