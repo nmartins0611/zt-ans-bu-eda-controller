@@ -192,7 +192,13 @@ virtualmachines:
           - port: 80
             protocol: TCP
             targetPort: 80
-            name: node03
+            name: podman
+      - name: podman-prometheus9090
+        ports:
+          - port: 9090
+            protocol: TCP
+            targetPort: 9090
+            name: podman            
     routes:
       - name: podman-web
         host: podman
@@ -200,6 +206,12 @@ virtualmachines:
         targetPort: 80
         tls: true
         tls_termination: Edge
+      - name: podman-prometheus
+        host: podman
+        service: podman-prometheus9090
+        targetPort: 9090
+        tls: true
+        tls_termination: Edge        
     userdata: |-
       #cloud-config
       user: rhel
