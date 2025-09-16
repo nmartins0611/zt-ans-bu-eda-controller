@@ -187,23 +187,29 @@ virtualmachines:
     networks:
       - default
     services:
-      - name: podman-http
+      - name: podman-alertmanager9093
         ports:
-          - port: 80
+          - port: 9093
             protocol: TCP
-            targetPort: 80
+            targetPort: 9093
             name: podman
       - name: podman-prometheus9090
         ports:
           - port: 9090
             protocol: TCP
             targetPort: 9090
-            name: podman            
+            name: podman
+      - name: podman-node_export9100
+        ports:
+          - port: 9100
+            protocol: TCP
+            targetPort: 9100
+            name: podman               
     routes:
-      - name: podman-web
+      - name: podman-alertmanager
         host: podman
-        service: podman-http
-        targetPort: 80
+        service: podman-alertmanager9093
+        targetPort: 9093
         tls: true
         tls_termination: Edge
       - name: podman-prometheus
@@ -211,7 +217,13 @@ virtualmachines:
         service: podman-prometheus9090
         targetPort: 9090
         tls: true
-        tls_termination: Edge        
+        tls_termination: Edge
+      - name: podman-node_export
+        host: podman
+        service: podman-node_export9100
+        targetPort: 9100
+        tls: true
+        tls_termination: Edge           
     userdata: |-
       #cloud-config
       user: rhel
