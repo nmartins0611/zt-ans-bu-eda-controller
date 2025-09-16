@@ -1,165 +1,115 @@
-= Ansible Automation Platform Lab Guide
-:toc:
-:toc-placement: auto
+= Lab Guide: Introduction to Event-Driven Ansible
+:doctype: book
+:notoc:
+:toc-title: Table of Contents
+:nosectnums:
+:icons: font
 
-== Welcome to the Team!
+_An introduction to the concepts of Event-Driven Ansible and a guide to configuring the necessary credentials in Ansible Automation Platform._
 
-Congratulations on joining the team! This lab will introduce you to automation using Ansible Automation Platform. We'll start with read-only tasks that are safe to automate, helping you build confidence before moving to more complex automation scenarios.
+---
 
-=== Lab Environment Setup
+== About this Lab Environment
 
-==== Access Credentials
+Each interactive lab environment has a set time limit, often 60 minutes, and may include an idle timeout. If your environment times out, your progress will be lost, but you can restart the lab at any time.
 
-[cols="1,1"]
+All necessary credentials will be provided within the challenge text. They are also consolidated at the bottom of each exercise for easy access. If you experience any issues, a link to open a GitHub issue is available at the end of each challenge.
+
+---
+
+== Introduction to Automation Decisions
+
+Event-Driven Ansible allows you to codify your response to infrastructure and application events, making your automation more resilient and responsive. While Automation Controller (via playbooks) automates a response, Event-Driven Ansible (via rulebooks) automates the recognition of the event itself.
+
+In recent releases of Ansible Automation Platform (AAP), components are co-located in a unified UI. The integration of Event-Driven Ansible and Automation Controller is configured by creating a credential that **Automation Decisions** can use to execute templates in **Automation Execution**.
+
+.   **Log in to Ansible Automation Platform.**
++
+    **Click** the `AAP` tab and log in using the following credentials:
++
+    * **Username:** `admin`
+    * **Password:** `ansible123!`
+
+.   **Explore the UI.**
++
+    After you log in, notice the menu sections for **Automation Execution** (Automation Controller) and **Automation Decisions** (Event-Driven Ansible Controller). As you work through this lab, you may need to navigate between these component menus.
++
+    * **Automation Decisions:** This is where event conditions are defined in *Rulebooks* and activated via *Rulebook Activations*.
+    * **Automation Execution:** This is where the *actions* are defined as *Templates* that run playbooks.
+
+.   **Create a credential for Automation Decisions.**
++
+    You must first create a credential to allow the two components to communicate. **Navigate** to **Automation Decisions** → **Infrastructure** → **Credentials** and **click** the **Create credential** button.
+
+.   **Enter the credential details.**
++
+    **Fill** out the form with the following details:
++
+[cols="1,1,2a"]
 |===
-| Username | Password
+| Key | Value | Notes
 
-| admin
-| ansible123!
+| *Name*
+| `AAP`
+|
+
+| *Description*
+| `Credential used to execute jobs from Automation Execution`
+|
+
+| *Organization*
+| `Default`
+|
+
+| *Credential type*
+| `Red Hat Ansible Automation Platform`
+|
+
+| *Red Hat Ansible Automation Platform*
+| `[[ Instruqt-Var key="EDA_CREDENTIAL_URL" hostname="aap" ]]`
+| The URL for the Automation Execution component.
+
+| *Username*
+| `admin`
+|
+
+| *Password*
+| `ansible123!`
+|
+
+| *OAuth token*
+|
+| _Intentionally left blank_
+
+| *Verify SSL*
+| Unchecked
+|
 |===
 
+NOTE: For more information, see the official documentation: link:https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/using_automation_decisions/eda-set-up-rhaap-credential-type#eda-set-up-rhaap-credential-type[Red Hat Ansible Automation Platform credential].
 
+Take a moment to look around the new UI, then proceed to the next challenge.
 
-== Lab Exercises
+---
 
-=== Exercise 1: Backing up Linux File Systems
+== Lab Credentials and Bug Reporting
 
-Managing backups across multiple Linux servers is a common operational task. Ansible can automate various snapshot mechanisms whether your infrastructure is cloud-based, virtualized, or bare metal.
+=== Environment Credentials
 
-==== Step 1: Check Current Backup Status
-
-. Navigate to the `aap` tab and login using the credentials above (`admin/ansible123!`)
-. Click on the Menu dropdown icon (hamburger menu)
-. Navigate to *Automation Execution* → *Templates*
-. Launch the template *Check RHEL Backups* by clicking the 🚀 icon
-
-You should see that no backups are currently available.
-
-.Current Backup Status
-image::/backupcheck.png[Backup Check Results]
-
-==== Step 2: Create XFS Backups
-
-Now let's create backups of the XFS file systems on your RHEL servers:
-
-. Navigate back to *Automation Execution* → *Templates*
-. Launch the *Server Backup - XFS/RHEL* template
-. This process will backup your three RHEL nodes using XFS dumps
-
-[NOTE]
-====
-This backup process takes approximately 6-7 minutes. Feel free to proceed with other tasks while it runs - Ansible jobs can run in parallel safely!
-====
-
-.XFS Backup Process
-image::xfsbackup.png[XFS Backup in Progress]
-
-==== Step 3: Verify Backup Creation
-
-Once the backup completes:
-
-. Launch the *Check RHEL Backups* template again
-. Verify that backups are now available on each server
-
-.Backup Verification
-image::afterbackupcheck.png[Backup Check After Creation]
-
-=== Exercise 2: Windows System Snapshots
-
-Windows systems have built-in Volume Shadow Copy Service (VSS) snapshotting capabilities. While your organization may use third-party backup tools, VSS snapshots are essential for database systems as they allow backups without locking active files.
-
-==== Step 1: Create VSS Snapshots
-
-. Navigate to *Automation Execution* → *Templates*
-. Launch the *Server Snapshot - VSS/Windows* template
-
-.Windows VSS Snapshot
-image::vss-snap.png[Windows VSS Snapshot Creation]
-
-==== Step 2: Verify Snapshot Creation
-
-. Navigate to *Automation Execution* → *Templates*
-. Execute the *Check Windows Backups* template
-
-.VSS Snapshot Verification
-image::vss-snap-check.png[VSS Snapshot Check]
-
-Great! The VSS snapshot has been successfully created.
-
-==== Step 3: Schedule Automated Snapshots
-
-To automate recurring snapshots without manual intervention:
-
-. Navigate to *Automation Execution* → *Templates*
-. Select *Server Backup - VSS/Windows*
-. Click on the *Schedules* tab
-. Click *Create schedule*
-
-.Schedule Configuration
-image::win-shed.png[Windows Schedule Setup]
-
-===== Schedule Configuration Details:
-
-* *Schedule Name:* `5 Min Snappy`
-* *Description:* `Automated VSS Snaps`
-* *Start date/time:* Leave as default
-* *Time Zone:* Leave as default
-
-===== Frequency Settings:
-
-. Click *Next*
-. Set *Frequency* to `Minutely`
-. Set *Interval* to `5`
-. Select *Save rule* and click *Next*
-. Skip exceptions (click *Next*)
-. Click *Finish*
-
-.Schedule Details
-image::shed-details.png[Schedule Configuration Details]
-
-Perfect! Your automated snapshot schedule is now configured.
-
-== Code Reference
-
-=== XFS Backup Automation
-
-Here's the key Ansible code used for XFS backups:
-
-[source,yaml]
+.AAP
+[source,text]
 ----
-tasks:
-  - name: Check if xfsdump is installed
-    ansible.builtin.yum:
-      name: xfsdump
-      state: present
-    when: ansible_facts.os_family == "RedHat"
-
-  - name: Ensure the backup directory exists
-    ansible.builtin.file:
-      path: "{{ backup_file | dirname }}"
-      state: directory
-      mode: '0755'
-
-  - name: Perform xfsdump backup
-    ansible.builtin.command:
-      cmd: >
-        xfsdump -l 0 -L {{ backup_label }}
-        -f {{ backup_file }} {{ xfs_mount_point }}
-    register: backup_result
-    ignore_errors: no
-
-  - name: Verify xfsdump success
-    ansible.builtin.debug:
-      msg: "Backup completed successfully: {{ backup_result.stdout }}"
+username: admin
+password: ansible123!
 ----
 
-== Next Steps
+.Gitea
+[source,text]
+----
+username: student
+password: learn_ansible
+----
 
-You've successfully completed the backup automation exercises! You now have:
+=== Report a Bug
 
-* ✅ Automated Linux XFS backups
-* ✅ Windows VSS snapshots
-* ✅ Scheduled recurring snapshots
-* ✅ Verification procedures for both systems
-
-This foundation in read-only automation tasks will help you build confidence for more complex automation scenarios in the future.
+If you experience issues with this lab, please link:https://github.com/ansible/instruqt/issues/new?labels=eda-up-and-running-25&title=New+EDA+issue:+eda-introduction+(Sandbox+id:+[[ Instruqt-Var key="SANDBOX" hostname="aap" ]])&assignees=cloin[open an issue on GitHub].
