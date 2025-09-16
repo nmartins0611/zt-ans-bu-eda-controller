@@ -1,253 +1,111 @@
-= Infrastructure Data Gathering with Ansible
-:toc:
-:toc-placement: auto
+= Lab Guide: Configuring Event-Driven Ansible Resources
+:doctype: book
+:notoc:
+:toc-title: Table of Contents
+:nosectnums:
+:icons: font
 
-== Introduction
+_A guide to understanding and configuring the key resources in Event-Driven Ansible: Credentials, Decision Environments, and Projects._
 
-Gathering comprehensive data about your infrastructure is one of the best starting points for automation with Ansible. While you know you have servers and networks, auditing and collecting all system data can be a massive undertaking. Fortunately, Ansible excels at this task and can scale to handle infrastructure of any size.
+---
 
-This lab will guide you through using Ansible to collect system information, generate reports, and perform compliance audits across your infrastructure.
+== Introduction to Automation Decisions Resources
 
-=== Lab Environment Setup
+Just like Automation Controller, Event-Driven Ansible requires several resources to be configured before you can activate a rulebook to listen for events. There are three main resource types you will work with.
 
-==== Access Credentials
+=== Credentials
 
-[cols="1,1"]
-|===
-| Username | Password
-
-| admin
-| ansible123!
-|===
-
-
-== Lab Exercises
-
-=== Exercise 1: Gathering Server Information
-
-Let's start by collecting detailed system facts from individual servers using Ansible's built-in capabilities.
-
-==== Step 1: Access the Inventory
-
-. Navigate to your lab `aap` tab and login using the credentials above
-. Navigate to *Automation Execution* → *Infrastructure* → *Inventories*
-. Select the *Video Platform Inventory*
-. Click on the *Hosts* tab
-
-This inventory contains the systems we'll be automating. You should see several hosts already configured for you.
-
-.Node Setup View
-image::node01-setup.png[Node Setup Interface]
-
-==== Step 2: Run Ad-hoc Commands
-
-We'll use Ansible Automation Platform's ad-hoc command feature to gather system facts:
-
-. Select the host `node01`
-. Click on *Run command*
-. From the module dropdown list, select the *Setup* module
-. Click *Next*
-
-.Setup Module Selection
-image::setup.png[Setup Module Interface]
-
-==== Step 3: Configure Execution Environment
-
-. Select the *Default execution environment* from the dropdown
-. Click *Next*
-
-==== Step 4: Choose Credentials
-
-. Select the *Application Nodes* credential
-. Click *Next*
-. Click *Finish* to execute the command
-
-==== Step 5: Review System Facts
-
-Once the command executes, you'll see comprehensive system facts displayed. This includes all the information Ansible can automatically gather from the target system.
-
-.System Facts Output
-image::setup-output.png[Setup Output Results]
+Credentials in Event-Driven Ansible are used to pull content from private repositories (for both Decision Environments and Projects), connect to external event sources, and secure inbound webhooks. This lab uses public repositories, so you will not need to create a source control credential.
 
 [NOTE]
 ====
-The Setup module collects extensive system information including hardware details, network configuration, installed packages, and operating system specifics. This data forms the foundation for infrastructure automation and reporting.
+For more information, see the official documentation: link:https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/using_automation_decisions/eda-credentials[Using automation decisions: Chapter 2. Credentials].
 ====
 
-=== Exercise 2: Generating Infrastructure Reports at Scale
+=== Decision Environments
 
-Now let's leverage Ansible's templating capabilities to create dynamic reports based on collected facts and task results.
+Decision Environments are container images that bundle all the necessary dependencies (such as collections with source plugins) required to execute a rulebook. They are conceptually similar to Execution Environments, which are used for running playbooks.
 
-==== Understanding Infrastructure Awareness
+For example, to receive events from Dynatrace, you would need a Decision Environment that includes the `dynatrace.event_driven_ansible` collection.
 
-Infrastructure awareness is crucial for effective IT operations. Ansible makes this easy by combining fact collection with Jinja templating to generate comprehensive, dynamic reports.
+.   **Explore the default Decision Environment.**
++
+    In the `AAP` tab, navigate to **Automation Decisions** → **Decision Environments**. You will see a pre-configured environment named "Default Decision Environment." This environment is distributed by Red Hat and contains the `ansible.eda` collection, which includes source plugins for sources like AWS SQS, Kafka, and Alertmanager (which you will use soon).
++
+image::../assets/Oct-17-2024_at_13.03.31-image.png[Decision Environments list view, opts="border"]
 
-==== Step 1: Generate Application Server Report
-
-. Navigate to *Automation Execution* → *Templates*
-. Execute the *Application Server Report* template
-. When prompted with options, click *All*
-
-This template will collect information from all your application servers and generate a comprehensive report.
-
-==== Step 2: View the Generated Report
-
-. Once the template execution completes, navigate to the *Report Server* tab
-. Refresh the page to see the newly generated report
-
-.Server Report Overview
-image::srv-report.png[Server Report Dashboard]
-
-Notice that the report includes backup information alongside system details, providing a holistic view of your infrastructure status.
-
-.Backup Data Integration
-image::backup-data.png[Backup Report Section]
-
-[TIP]
+[NOTE]
 ====
-You can re-run the report template and select different options to create targeted reports for specific criteria or server subsets.
+For more information, see the official documentation: link:https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/using_automation_decisions/eda-decision-environments[Using automation decisions: Chapter 5. Decision environments].
 ====
 
-=== Exercise 3: Compliance Reporting with OpenSCAP
+---
 
-Security compliance is a critical requirement for most organizations. Let's generate a compliance report using OpenSCAP integration.
+== Task: Import the EDA Project
 
-==== Background: Why Compliance Reports Matter
+**Projects** in Event-Driven Ansible are source control repositories that contain your rulebooks. The project for this lab contains a rulebook for Alertmanager. You will now import this project.
 
-Information Security teams require regular compliance reports to ensure systems meet organizational and regulatory requirements. Ansible can automate OpenSCAP scans to provide these reports consistently and at scale.
+.   **Navigate to the Projects page.**
++
+    In the `AAP` tab, go to **Automation Decisions** → **Projects**.
 
-==== Step 1: Generate Compliance Report
+.   **Create a new project.**
++
+    **Click** the **Create project** button.
++
+image::../assets/Oct-17-2024_at_13.06.48-image.png[Create project button, opts="border"]
 
-Security has specifically requested a compliance report for `Node02`. Let's fulfill this request:
+.   **Enter the project details.**
++
+    **Fill** out the form with the following details:
++
+[cols="1,2a"]
+|===
+| Key | Value
+| *Name* | `My EDA project`
+| *Description* | `Project containing Event-Driven Ansible content`
+| *Organization* | `Default`
+| *Source control URL* | `http://podman:3000/student/eda-project`
+| *Source control credential*| _Leave blank_ (This is a public repository)
+|===
 
-. Navigate to *Automation Execution* → *Templates*
-. Execute the *OpenSCAP Report* template
+.   **Save and sync the project.**
++
+    **Click** **Create project**. If successful, the status should show **Completed**. If you make any changes to the files in the repository, you will need to re-sync the project using the "Sync project" button.
++
+image::../assets/Oct-17-2024_at_13.10.35-image.png[Successful project sync, opts="border"]
 
-==== Step 2: Access Compliance Results
+[NOTE]
+====
+For more information, see the official documentation: link:https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/using_automation_decisions/eda-projects[Using automation decisions: Chapter 4. Projects].
+====
 
-. Once the job completes, navigate to the *Compliance Report* tab
-. You'll see the generated compliance report files
+.   **(Optional) Explore the imported project.**
++
+    To see the content you just imported, navigate to the `Gitea` tab and log in. The `eda-project` repository contains several rulebooks (including `alertmanager.yml` which you'll use next) and a `playbooks` directory. The rulebooks reference the *template name* in Automation Execution, not the playbook filename.
 
-.Compliance Report Directory
-image::compliance_report_folder.png[Compliance Report Folder]
+You are now ready to proceed to the next challenge.
 
-==== Step 3: Review Detailed Results
+---
 
-Click on the report file to view the detailed compliance results, including:
+== Lab Credentials and Bug Reporting
 
-- Security control assessments
-- Pass/fail status for each check
-- Remediation recommendations
-- Risk severity levels
+=== Environment Credentials
 
-.Detailed Compliance Report
-image::compliance_report.png[Compliance Report Details]
-
-== Code Reference
-
-=== OpenSCAP Automation Implementation
-
-Here's the key Ansible code used for automated compliance reporting:
-
-[source,yaml]
+.AAP
+[source,text]
 ----
-tasks:
-  - name: Check if the system is RHEL 8
-    ansible.builtin.debug:
-      msg: "This playbook is not compatible with {{ inventory_hostname }} (not RHEL 8)"
-    when: ansible_distribution != "RedHat" or ansible_distribution_major_version != "8"
-    failed_when: false
-
-  - name: Run compliance tasks on RHEL 8 systems only
-    when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "8"
-    block:
-      - name: Get our facts straight
-        ansible.builtin.set_fact:
-          _profile: '{{ compliance_profile | replace("pci_dss", "pci-dss") }}'
-          _report_dir: /tmp/oscap-reports
-
-      - name: Ensure OpenSCAP tools are installed
-        ansible.builtin.dnf:
-          name: '{{ openscap_packages }}'
-          state: present
-
-      - name: Configure httpd
-        when: use_httpd | bool
-        block:
-          - name: Install httpd
-            ansible.builtin.dnf:
-              name: httpd
-              state: present
-            notify: Restart httpd
-
-          - name: Override report directory
-            ansible.builtin.set_fact:
-              _report_dir: /var/www/html/oscap-reports
-
-          - name: Gather service facts
-            ansible.builtin.service_facts:
-
-          - name: Enable firewall http service
-            ansible.posix.firewalld:
-              service: http
-              state: enabled
-              immediate: true
-              permanent: true
-            when: "'firewalld.service' in ansible_facts.services"
-
-          - name: Disable httpd welcome page
-            ansible.builtin.file:
-              path: /etc/httpd/conf.d/welcome.conf
-              state: absent
-            notify: Restart httpd
-
-      - name: Create report on Report Server
-        block:
-          - name: Ensure report directory exists
-            ansible.builtin.file:
-              path: '{{ _report_dir }}/{{ _profile }}'
-              state: directory
-              owner: root
-              group: root
-              mode: 0755
-
-          - name: Set report name
-            ansible.builtin.set_fact:
-              _report: '{{ _report_dir }}/{{ _profile }}/report-{{ inventory_hostname }}-{{ ansible_date_time.iso8601 }}.html'
-
-          - name: Generate compliance report
-            ansible.builtin.command: >-
-              oscap xccdf eval --profile {{ _profile }} --report {{ _report }}
-              /usr/share/xml/scap/ssg/content/ssg-rhel{{ ansible_distribution_major_version }}-ds.xml
-            args:
-              creates: '{{ _report }}'
-            register: _oscap
-            failed_when: _oscap.rc not in [0, 2]
-
-          - name: Set report permissions
-            ansible.builtin.file:
-              path: '{{ _report }}'
-              owner: root
-              group: root
-              mode: 0644
+username: admin
+password: ansible123!
 ----
 
-== Key Takeaways
+.Gitea
+[source,text]
+----
+username: student
+password: learn_ansible
+----
 
-You've successfully completed the infrastructure data gathering exercises! You now understand how to:
+=== Report a Bug
 
-* ✅ **Collect System Facts**: Use Ansible's Setup module to gather comprehensive system information
-* ✅ **Generate Dynamic Reports**: Leverage Jinja templating to create infrastructure reports at scale  
-* ✅ **Automate Compliance Audits**: Implement OpenSCAP integration for security compliance reporting
-* ✅ **Scale Data Collection**: Apply these techniques across multiple systems simultaneously
-
-== Next Steps
-
-With these foundational skills in infrastructure data gathering, you're ready to:
-
-- Implement regular automated reporting schedules
-- Expand compliance scanning to additional security frameworks
-- Create custom reports tailored to your organization's specific needs
-- Build more complex automation workflows using the collected system data
-
-This infrastructure awareness foundation will serve as the basis for more advanced automation scenarios throughout your Ansible journey.
+If you experience issues with this lab, please link:https://github.com/ansible/instruqt/issues/new?labels=eda-up-and-running-25&title=New+EDA+issue:+eda-project-import+(Sandbox+id:+[[ Instruqt-Var key="SANDBOX" hostname="aap" ]])&assignees=cloin[open an issue on GitHub].
