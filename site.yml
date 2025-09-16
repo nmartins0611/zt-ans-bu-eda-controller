@@ -1,6 +1,6 @@
 ---
 site:
-  title: Event-Driven Ansible Controller: Up and running (AAP 25)
+  title: Event-Driven Ansible Controller Up and running (AAP 25)
   url: https://redhat-scholars.github.io/course-template
   start_page: modules::index.adoc
 
