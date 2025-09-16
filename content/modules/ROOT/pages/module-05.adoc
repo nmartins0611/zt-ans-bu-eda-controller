@@ -1,0 +1,290 @@
+= Lab Guide: Using Event Streams
+:doctype: book
+:notoc:
+:toc-title: Table of Contents
+:nosectnums:
+:icons: font
+
+_A guide to creating and using Event Streams in Event-Driven Ansible for simple and powerful event collection._
+
+---
+
+== Introduction to Event Streams
+
+**Event Streams** in Ansible Automation Platform are a useful way of collecting events that can be distributed to one or more Rulebook Activations. They provide a straightforward way to receive webhook events from your services without needing to configure complex networking, as they work over the default AAP route.
+
+image::../assets/Oct-17-2024_at_09.43.05-image.png[Event Stream diagram, opts="border"]
+
+=== Objective
+
+In this lab, you will create an Event Stream to receive events from a Gitea project. When a specific file (`alert.rules`) in the project is modified, the Event Stream will trigger a rulebook that redeploys a Prometheus stack to apply the new alerting rule automatically.
+
+[IMPORTANT]
+====
+.Environment Credentials
+====
+.Ansible Automation Platform (AAP)
+* **Username:** `admin`
+* **Password:** `ansible123!`
+
+.Gitea
+* **Username:** `student`
+* **Password:** `learn_ansible`
+====
+
+---
+
+== Task 1: Secure the Event Stream with a Credential
+
+Event Streams can be secured using tokens. Before creating the Event Stream, you will create a credential to provide it with basic authentication.
+
+.   **Navigate to the Credentials page.**
++
+    In the `AAP` tab, go to **Infrastructure** → **Credentials**.
+
+.   **Create a new credential.**
++
+    **Click** the **Create credential** button and use the following values:
++
+[cols="1,2,2a"]
+|===
+| Key | Value | Notes
+
+| *Name*
+| `Gitea token`
+|
+
+| *Description*
+| `Credential that will be used to secure an Event Stream`
+|
+
+| *Credential Type*
+| `Token Event Stream`
+|
+
+| *Token*
+| `ansible123!`
+|
+
+| *HTTP Header Key*
+| `Authorization`
+| This is the default.
+|===
+
+NOTE: For product documentation, see link:https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/using_automation_decisions/eda-credentials[Using automation decisions: Chapter 2. Credentials].
+
+== Task 2: Create the Event Stream
+
+Now you will create the Event Stream itself and attach the credential you just made.
+
+.   **Navigate to the Event Streams page.**
++
+    In the `AAP` tab, go to **Automation Decisions** → **Event Streams**.
+
+.   **Create a new Event Stream.**
++
+    **Click** **Create event stream** and use the following values:
++
+[cols="1,2,2a"]
+|===
+| Key | Value | Notes
+
+| *Name*
+| `Gitea project events`
+|
+
+| *Event Stream Type*
+| `Token Event Stream`
+|
+
+| *Credential*
+| `Gitea token`
+| The credential you previously created.
+
+| *Forward events to rulebook activation*
+| Enabled
+| This is the default.
+|===
++
+Your final Event Stream should look like this:
++
+image::../assets/Nov-04-2024_at_16.28.37-image.png[Final event stream configuration, opts="border"]
+
+.   **Copy the Event Stream URL.**
++
+    **Click** the "Copy to clipboard" button next to the URL. You will use this in the next step.
++
+image::../assets/Nov-12-2024_at_15.01.52-image.png[Event Stream copy to clipboard button, opts="border"]
+
+NOTE: Each Event Stream gets a unique URL path, allowing multiple streams to use the same default AAP route.
+
+== Task 3: Configure the Gitea Webhook
+
+The Gitea project now needs to be modified to send events to the URL of the Event Stream you created.
+
+.   **Navigate to Webhook settings in Gitea.**
++
+    In the `Gitea` tab, select the project **eda-alertmanager**. Click **Settings** → **Webhooks** and then **Add Webhook** → **Gitea**.
++
+image::../assets/Nov-11-2024_at_13.39.26-image.png[Add a new webhook in Gitea, opts="border"]
+
+.   **Fill in the new webhook form.**
++
+[cols="1,2,2a"]
+|===
+| Key | Value | Notes
+
+| *Target URL*
+| Your Event Stream URL
+| Paste the URL you copied from AAP.
+
+| *POST Content Type*
+| `application/json`
+|
+
+| *Trigger On*
+| `Push Events`
+|
+
+| *Authorization Header*
+| `ansible123!`
+| This must match the token credential you created.
+
+| *Active*
+| ☑
+| Ensure the box is checked.
+|===
++
+image::../assets/Nov-12-2024_at_15.05.10-image.png[New webhook form, opts="border"]
+
+.   **Test the webhook delivery.**
++
+    **Click** the link to the webhook you just created. At the bottom, click the **Test Delivery** button. Return to the `AAP` tab and check your Event Stream. The "Events received" count should now be `1`.
++
+image::../assets/Nov-11-2024_at_14.03.49-image.png[Gitea test webhook delivery, opts="border"]
+
+== Task 4: Create the Rulebook Activation
+
+Now, create a Rulebook Activation to listen to the events received on the Event Stream.
+
+.   **Navigate to Rulebook Activations.**
++
+    In the `AAP` tab, go to **Automation Decisions** → **Rulebook Activations**.
+
+.   **Create a new rulebook activation.**
++
+[cols="1,2,2a"]
+|===
+| Key | Value | Notes
+
+| *Name*
+| `Gitea project events`
+|
+
+| *Project*
+| `My EDA project`
+|
+
+| *Rulebook*
+| `gitea.yml`
+|
+
+| *Event streams*
+| `Gitea project events`
+| Select the Event Stream you created.
+
+| *Credential*
+| `AAP`
+|
+|===
++
+After creating the activation, the output should look similar to this:
++
+image:../assets/Nov-11-2024_at_14.24.37-image.png[Final Rulebook Activation screen, opts="border"]
+
+== Task 5: Trigger the Gitea to Prometheus Workflow
+
+Let's put this integration to work by modifying a file, which will trigger an automated response.
+
+.   **Modify the Prometheus alert rules.**
++
+    In the `Gitea` tab, navigate to the **eda-alertmanager** project and open the file `prometheus/alert.rules`. **Click** the pencil icon to edit it.
+
+.   **Add a new alert rule.**
++
+    **Modify** the content of this file to match the following, then scroll to the bottom and commit the changes.
++
+[source,yaml]
+----
+groups:
+- name: selinux status
+  rules:
+  - alert: selinux disabled
+    expr: node_selinux_current_mode == 0
+    for: 10s
+    labels:
+      severity: page
+    annotations:
+      summary: "selinux is disabled on {{ $labels.instance }}"
+- name: DiskUsageAlerts
+  rules:
+    - alert: RootDiskSpaceLow
+      expr: node_filesystem_avail_bytes{mountpoint="/"} < (0.2 * node_filesystem_size_bytes{mountpoint="/"})
+      for: 10s
+      labels:
+        severity: warning
+      annotations:
+        summary: "Low Disk Space Alert on {{ $labels.instance }}"
+        description: "Available disk space on {{ $labels.mountpoint }} is below 20%."
+----
++
+This push event will kick off a new job template that updates the Prometheus configuration.
+
+.   **Verify the new alert in Prometheus.**
++
+    Once the job template is complete, go to the `Prometheus` tab. You should see a new alert under the "Alerts" section for low disk space.
++
+image::../assets/Nov-12-2024_at_08.09.50-image.png[New disk space alert in Prometheus, opts="border"]
+
+== Task 6: Trigger the Prometheus to AAP Workflow
+
+Now, let's trigger the new alert.
+
+.   **Fill up the disk space on a RHEL node.**
++
+    From either the `RHEL1` or `RHEL2` tab, **run** this set of commands:
++
+[source,bash]
+----
+df -h
+sudo fallocate -l 15G /bigfile
+df -h
+----
++
+The output will show that the device mounted to `/` is now over 80% full, which will trigger the alert.
++
+image::../assets/Nov-12-2024_at_08.14.30-image.png[Showing low disk space on / volume, opts="border"]
+
+.   **Observe the automated remediation.**
++
+    It may take a couple of minutes for the alert to fire. Once it does, the event will be sent to AAP. A job template will run in response, resolving the storage issue by removing the 15G file.
+
+.   **Review the Rule Audit.**
++
+    Navigate to **Automation Decisions** → **Rule Audit** in AAP. You will see both the disk space alert "FIRING" and "RESOLVED" events.
++
+image::../assets/Nov-12-2024_at_15.16.25-image.png[Disk space rule audit, opts="border"]
+
+---
+
+== Review
+
+You just created an Event Stream and used it to receive events from a Git project, which in turn updated your monitoring. You then triggered an alert from that monitoring, which was automatically remediated.
+
+== Next Steps
+
+Onto the next challenge! 👉
+
+== Troubleshooting
+
+If you have encountered an issue with this lab, please link:https://github.com/ansible/instruqt/issues/new?labels=eda-up-and-running-25&title=New+EDA+issue:+event-streams+(Sandbox+id:+[[ Instruqt-Var key="SANDBOX" hostname="aap" ]])&assignees=cloin[open an issue on GitHub].
