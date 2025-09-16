@@ -349,58 +349,58 @@ tee /tmp/setup.yml << EOF
 
 ###
 ### RHEL nodes setup 
-###
-- name: Setup rhel nodes
-  hosts: nodes
-  become: true
-  tasks:
+# ###
+# - name: Setup rhel nodes
+#   hosts: nodes
+#   become: true
+#   tasks:
 
 
-    - name: Install epel-release
-      ansible.builtin.dnf:
-        name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
-        state: present
-        disable_gpg_check: true
+#     - name: Install epel-release
+#       ansible.builtin.dnf:
+#         name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+#         state: present
+#         disable_gpg_check: true
 
-    # - name: Install packages
-    #   ansible.builtin.dnf:
-    #     name:
-    #       - git
-    #       - podman-compose
-    #     state: present
+#     # - name: Install packages
+#     #   ansible.builtin.dnf:
+#     #     name:
+#     #       - git
+#     #       - podman-compose
+#     #     state: present
 
-          ## Lab Fix
-    - name: Ensure crun is updated to the latest available version
-      ansible.builtin.dnf:
-        name: crun
-        state: latest
-      become: true
+#           ## Lab Fix
+#     - name: Ensure crun is updated to the latest available version
+#       ansible.builtin.dnf:
+#         name: crun
+#         state: latest
+#       become: true
 
-    - name: Install required packages
-      ansible.builtin.package:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - git
-        - tmux
-        - python3-pip
-        - podman-compose
-        - python3-dotenv
-      become: true
+#     - name: Install required packages
+#       ansible.builtin.package:
+#         name: "{{ item }}"
+#         state: present
+#       loop:
+#         - git
+#         - tmux
+#         - python3-pip
+#         - podman-compose
+#         - python3-dotenv
+#       become: true
 
-    - name: Clone eda-alertmanager repository
-      ansible.builtin.git:
-        repo: http://gitea:3000/student/eda-alertmanager.git
-        dest: /tmp/eda-alertmanager
+#     - name: Clone eda-alertmanager repository
+#       ansible.builtin.git:
+#         repo: http://gitea:3000/student/eda-alertmanager.git
+#         dest: /tmp/eda-alertmanager
 
-    - name: Allow user to linger
-      ansible.builtin.command: 
-        cmd: loginctl enable-linger rhel
+#     - name: Allow user to linger
+#       ansible.builtin.command: 
+#         cmd: loginctl enable-linger rhel
 
-    - name: Start node_exporter services with podman-compose
-      ansible.builtin.command:
-        cmd: podman-compose up -d
-        chdir: /tmp/eda-alertmanager/node_exporter
+#     - name: Start node_exporter services with podman-compose
+#       ansible.builtin.command:
+#         cmd: podman-compose up -d
+#         chdir: /tmp/eda-alertmanager/node_exporter
 
 EOF
 
