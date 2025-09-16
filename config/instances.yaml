@@ -199,7 +199,7 @@ virtualmachines:
             protocol: TCP
             targetPort: 9090
             name: podman
-      - name: podman-node_export9100
+      - name: podman-nodeexport9100
         ports:
           - port: 9100
             protocol: TCP
@@ -218,9 +218,9 @@ virtualmachines:
         targetPort: 9090
         tls: true
         tls_termination: Edge
-      - name: podman-node_export
+      - name: podman-nodeexport
         host: podman
-        service: podman-node_export9100
+        service: podman-nodeexport9100
         targetPort: 9100
         tls: true
         tls_termination: Edge           
