@@ -18,4 +18,61 @@ retry "rpm -Uhv https://${SATELLITE_URL}/pub/katello-ca-consumer-latest.noarch.r
 retry "subscription-manager register --org=${SATELLITE_ORG} --activationkey=${SATELLITE_ACTIVATIONKEY}"
 
 echo "Registered and Ready"
+
+echo "### Starting RHEL Node Setup Script ###"
+
+# -----------------------------------------------------------------------------
+## 1. Install System Packages and Dependencies
+# -----------------------------------------------------------------------------
+
+echo "--> Installing the EPEL repository... 📦"
+# The --nogpgcheck flag is equivalent to Ansible's disable_gpg_check: true
+sudo dnf install -y --nogpgcheck https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+
+echo "--> Ensuring 'crun' is updated to the latest version..."
+sudo dnf update -y crun
+
+echo "--> Installing required packages..."
+PACKAGES=(
+    "git"
+    "tmux"
+    "python3-pip"
+    "podman-compose"
+    "python3-dotenv"
+)
+sudo dnf install -y "${PACKAGES[@]}"
+
+# -----------------------------------------------------------------------------
+## 2. Clone the Project Repository
+# -----------------------------------------------------------------------------
+
+DEST_DIR="/tmp/eda-alertmanager"
+REPO_URL="http://gitea:3000/student/eda-alertmanager.git"
+
+echo "--> Cloning repository from ${REPO_URL}... 📥"
+
+# For idempotency, remove the destination directory if it already exists
+# to ensure a fresh clone every time the script runs.
+if [ -d "$DEST_DIR" ]; then
+    echo "  - Destination ${DEST_DIR} exists. Removing it first."
+    rm -rf "$DEST_DIR"
+fi
+git clone "${REPO_URL}" "${DEST_DIR}"
+
+# -----------------------------------------------------------------------------
+## 3. Configure System and Start Services
+# -----------------------------------------------------------------------------
+
+echo "--> Enabling user lingering for 'rhel' to allow long-running services..."
+sudo loginctl enable-linger rhel
+
+echo "--> Starting node_exporter service with podman-compose... 🚀"
+SERVICE_DIR="/tmp/eda-alertmanager/node_exporter"
+
+# Change to the service directory and start the containers in detached mode.
+# Using a subshell `(...)` ensures we return to the original directory afterward.
+(cd "${SERVICE_DIR}" && podman-compose up -d)
+
+echo ""
+echo "✅ ### RHEL node setup complete! ###"
 exit 0
