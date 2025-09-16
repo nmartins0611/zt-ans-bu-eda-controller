@@ -1,192 +1,126 @@
-= Windows Patching Report with Ansible
-:toc:
-:toc-placement: auto
+= Lab Guide: Creating a Rulebook Activation
+:doctype: book
+:notoc:
+:toc-title: Table of Contents
+:nosectnums:
+:icons: font
+
+_A guide to creating and understanding Rulebook Activations in Event-Driven Ansible._
+
+---
 
 == Introduction
 
-Generating patch reports is a critical operational task for maintaining system security and compliance. When you don't have direct access to Windows systems, Ansible becomes an invaluable tool for gathering patch information and delivering actionable reports to your Windows administration teams.
+Up to this point, you've inspected a rulebook but haven't seen how to start it. **Rulebook Activations** are the "always listening" part of Event-Driven Ansible. They combine a Project (containing rulebooks) with a Decision Environment to create a listener that is always running, waiting for new events to handle.
 
-This lab demonstrates how to use Ansible to scan Windows systems for required patches and generate comprehensive reports that can be easily shared with stakeholders.
+Event-Driven Ansible manages the restart of a Rulebook Activation if it stops due to a failure, and the **Rule Audit** screen shows a record every time an event is received that matches a condition in the rulebook.
 
-=== Lab Environment Setup
+[IMPORTANT]
+====
+.Environment Credentials
+====
+.Ansible Automation Platform (AAP)
+* **Username:** `admin`
+* **Password:** `ansible123!`
 
-==== Access Credentials
+.Gitea
+* **Username:** `student`
+* **Password:** `learn_ansible`
+====
 
-[cols="1,1"]
+---
+
+== Task: Create a Rulebook Activation
+
+In this task, you will create and enable a Rulebook Activation.
+
+.   **Navigate to the Rulebook Activations page.**
++
+    In the `AAP` tab, go to the left navigation menu and select **Automation Decisions** → **Rulebook Activations**.
+
+.   **Create a new Rulebook Activation.**
++
+    **Click** the blue **Create rulebook activation** button.
+
+.   **Enter the activation details.**
++
+    **Fill** out the form with the following values:
++
+[cols="1,2,2a"]
 |===
-| Username | Password
+| Key | Value | Notes
 
-| admin
-| ansible123!
+| *Name*
+| `Alertmanager events`
+|
+
+| *Description*
+| `Catch alerts coming from alertmanager`
+|
+
+| *Organization*
+| `Default`
+|
+
+| *Project*
+| `My EDA project`
+|
+
+| *Rulebook*
+| `alertmanager.yml`
+|
+
+| *Credential*
+| `AAP`
+| This credential is used to execute job templates in the automation controller.
+
+| *Decision environment*
+| `Default Decision Environment`
+|
+
+| *Restart policy*
+| `On failure`
+|
+
+| *Log level*
+| `Debug`
+|
+
+| *Rulebook activation enabled?*
+| ☑
+| Ensure this is enabled.
 |===
++
+NOTE: For product documentation, see link:https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/using_automation_decisions/eda-rulebook-activations[Using automation decisions: Chapter 8. Rulebook activations].
 
+.   **Save the activation.**
++
+    **Click** the **Create rulebook activation** button at the bottom of the form.
++
+image::../assets/Nov-12-2024_at_13.56.18-image.png[Completed Rulebook Activation form, opts="border"]
 
+.   **Review the activation status.**
++
+    You will be taken to a details page for the new Rulebook Activation. The *Activation status* may show as "Pending" or "Starting" but should transition to **Running** momentarily.
 
-== Lab Exercise
+.   **Check the activation history.**
++
+    **Select** the **History** tab at the top. Each time this Rulebook Activation starts or restarts, it gets a new ID and a new entry on this page. This is because each activation is a new `ansible-rulebook` process running inside a container.
++
+image:../assets/Oct-17-2024_at_13.46.34-image.png[Running rulebook activation History tab, opts="border"]
 
-=== Exercise 1: Creating a Windows Update Report
+.   **View the debug output.**
++
+    You can **click** the link for the running activation (e.g., "1 - Alertmanager events") to see the live debug output of the running rulebook.
 
-We'll create a dynamic patch report using Ansible's templating capabilities and publish it as a web page directly on the Windows host for easy access.
+At this point, you have a rulebook that is actively listening for events from Alertmanager.
 
-==== Step 1: Access the Windows Update Template
+---
 
-. Navigate to *Automation Execution* → *Templates*
-. Select the *Windows Update Report* template
+== Next Steps
 
-Before launching the template, we need to configure a survey to allow users to specify which type of updates they want to scan for.
+Now that your listener is active, it's time to generate an event. Proceed to the next challenge to continue.
 
-.Windows Update Template
-image::update-template.png[Update Template Interface]
+== Troubleshooting
 
-==== Step 2: Configure the Survey
-
-. Navigate to the *Survey* tab
-. Create a new survey question with the following details:
-
-===== Survey Configuration:
-
-* *Question:* `Which update category are you wanting to search for?`
-* *Description:* `Windows Update Category`
-* *Answer variable name:* `update_category`
-* *Answer type:* `Multiple Choice (single select)`
-
-===== Multiple Choice Options:
-
-Add each of the following options (click the + button after entering each option):
-
-* Security Updates
-* Critical Updates  
-* Tools
-* Definition Updates
-* Updates
-
-[NOTE]
-====
-To add each multiple choice option, fill in the field and then click the + button to add it to the list.
-====
-
-.Survey Configuration
-image::survey.png[Survey Setup Interface]
-
-==== Step 3: Enable and Save the Survey
-
-. Click *Create survey question* to save your configuration
-. Enable the survey using the toggle at the top of the panel
-
-.Survey Enablement
-image::survey-enable.png[Survey Enable Toggle]
-
-==== Step 4: Execute the Patch Scan
-
-. Launch the template
-. From the survey dropdown, select *Security Updates*
-. Wait for the template execution to complete
-
-The Ansible playbook will connect to the Windows server, scan for available security updates, and generate a comprehensive HTML report.
-
-==== Step 5: Review the Generated Report
-
-. Once the template completes, navigate to the *Windows Report* tab
-. Review the outstanding updates that are needed for the system
-
-The report will display all available security updates, including:
-- Update titles and descriptions
-- Knowledge Base (KB) numbers
-- Installation requirements
-- Download sizes
-
-.Windows Update Report
-image::update-report.png[Windows Update Report Results]
-
-[TIP]
-====
-You can re-run the template with different update categories to generate focused reports for specific types of patches (Critical Updates, Definition Updates, etc.).
-====
-
-=== Exercise 2: Verifying Scheduled Tasks
-
-Let's verify that our previously scheduled backup tasks are running correctly.
-
-==== Step 1: Check Scheduled Job Execution
-
-. Navigate to *Automation Execution* → *Jobs*
-. Observe that your *Server Backup - VSS/Windows* jobs that were scheduled earlier have been running automatically
-
-==== Step 2: Verify VSS Snapshots
-
-. Execute the *Check Windows Backups* template
-. Confirm that VSS snapshots are being created successfully
-
-.VSS Snapshots Verification
-image::vss-snaps.png[VSS Snapshots Status]
-
-This verification confirms that your automated backup strategy is working correctly alongside your new patch reporting capabilities.
-
-== Code Reference
-
-=== Windows Update Report Implementation
-
-Here's the key Ansible code used for generating Windows patch reports:
-
-[source,yaml]
-----
-tasks:
-  - name: Create site directory structure
-    ansible.windows.win_file:
-      path: "{{ report_path }}"
-      state: directory
-
-  - name: Show us the updates
-    debug:
-      msg: "{{ update_category }}"
-
-  - name: Check available updates
-    ansible.windows.win_updates:
-      category_names:
-       - "{{ update_category | default(omit) }}"
-      state: searched
-    register: update_result
-
-  - name: Generate HTML report
-    ansible.windows.win_template:
-      src: templates/win_patch_report.html.j2
-      dest: C:\inetpub\wwwroot\index.html
-      force: true
-    notify: restart_iis
-    vars:
-      updates: "{{ update_result.updates }}"
-
-handlers:
-  - name: restart_iis
-    ansible.windows.win_service:
-      name: W3Svc
-      state: restarted
-      start_mode: auto
-----
-
-=== Key Components Explained
-
-**Update Scanning:**
-- Uses `ansible.windows.win_updates` module in search mode
-- Filters by specified update categories
-- Registers results for report generation
-
-**Report Generation:**
-- Leverages Jinja2 templating for dynamic HTML creation
-- Publishes reports directly to IIS web server
-- Provides accessible, shareable format for stakeholders
-
-**Service Management:**
-- Automatically restarts IIS after report publication
-- Ensures web service availability for report access
-
-== Key Takeaways
-
-Congratulations! You've successfully automated multiple critical IT operations tasks:
-
-* ✅ **Automated Backup Operations**: Implemented XFS backups for Linux and VSS snapshots for Windows
-* ✅ **Infrastructure Data Collection**: Gathered comprehensive system facts and generated dynamic reports
-* ✅ **Security Compliance**: Automated OpenSCAP compliance scanning and reporting
-* ✅ **Patch Management**: Created dynamic Windows update reports with configurable survey options
-* ✅ **Scheduled Automation**: Configured recurring tasks that run without manual intervention
-
+If you have encountered an issue with this lab, please link:https://github.com/ansible/instruqt/issues/new?labels=eda-up-and-running-25&title=New+EDA+issue:+create-rulebook-activation+(Sandbox+id:+[[ Instruqt-Var key="SANDBOX" hostname="aap" ]])&assignees=cloin[open an issue on GitHub].
