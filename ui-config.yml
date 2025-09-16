@@ -47,7 +47,7 @@ tabs:
       - module-05
       - module-06
   - name: Prometheus
-    url: https://podman-${guid}.${domain}/
+    url: https://podman-${guid}.${domain}:9090/
     modules:
       - module-04
       - module-05
