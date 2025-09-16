@@ -192,34 +192,34 @@ virtualmachines:
           - port: 9093
             protocol: TCP
             targetPort: 9093
-            name: podman
+            name: podman-alert
       - name: podman-prometheus9090
         ports:
           - port: 9090
             protocol: TCP
             targetPort: 9090
-            name: podman
+            name: podman-prome
       - name: podman-nodeexport9100
         ports:
           - port: 9100
             protocol: TCP
             targetPort: 9100
-            name: podman               
+            name: podman-nodeexp            
     routes:
       - name: podman-alertmanager
-        host: podman
+        host: podman-alert
         service: podman-alertmanager9093
         targetPort: 9093
         tls: true
         tls_termination: Edge
       - name: podman-prometheus
-        host: podman
+        host: podman-prome
         service: podman-prometheus9090
         targetPort: 9090
         tls: true
         tls_termination: Edge
       - name: podman-nodeexport
-        host: podman
+        host: podman-nodeexp
         service: podman-nodeexport9100
         targetPort: 9100
         tls: true
