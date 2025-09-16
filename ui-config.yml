@@ -5,13 +5,22 @@ antora:
   dir: www
   modules:
     - name: module-01
-      label: "Backup and Snapshots"
+      label: "Introduction"
       solveButton: false
     - name: module-02
-      label: "Infrastructure Reporting"
+      label: "Import a project to Event-Driven Ansible"
       solveButton: false
     - name: module-03
-      label: "Windows Reporting"
+      label: "Rulebook Activations"
+      solveButton: false
+    - name: module-04
+      label: "Observe some events"
+      solveButton: false
+    - name: module-05
+      label: "Event Streams"
+      solveButton: false
+    - name: module-06
+      label: "Open challenge"
       solveButton: false
 
 tabs:
@@ -22,23 +31,43 @@ tabs:
       - module-02
       - module-03
     external: false
-  - name: Report Server
-    url: https://node03-${guid}.${domain}/index.html
-    external: true
+  - name: ">_ Terminal"
+    url: /wetty
     modules:
-     - module-02
-  - name: Compliance Report
-    url: https://node02-${guid}.${domain}/oscap-reports/ospp/
-    external: true
+      - module-01
+  - name: Gitea
+    url: https://gitea-${guid}.${domain}/
     modules:
-     - module-02
-  - name: Windows UI
-    url: https://windows-${guid}.${domain}/
-    external: true
+      - module-02
+      - module-03
+      - module-04
+      - module-05
+      - module-06
+  - name: Prometheus
+    url: https://podman-${guid}.${domain}/
     modules:
-     - module-03
-
-
+      - module-04
+      - module-05
+      - module-06
+  - name: ">_ RHEL1"
+    url: /wetty_rhel-1
+    modules:
+      - module-04
+      - module-05
+      - module-06
+  - name: ">_ RHEL2"
+    url: /wetty_rhel-2
+    modules:
+      - module-04
+      - module-05
+      - module-06
+  - name: ">_ Podman"
+    url: /wetty_podman
+    modules:
+      - module-04
+      - module-05
+      - module-06
+  
   # - name: Windows RDP
   #   url: https://windows-ironrdp-${guid}.${domain}/
   #   external: false
