@@ -1,0 +1,85 @@
+= Lab Guide: Event-Driven Ansible Playground
+:doctype: book
+:toc:
+:toc-title: Table of Contents
+:sectnums:
+:icons: font
+
+_An open challenge to experiment with the concepts you've learned in the Event-Driven Ansible lab._
+
+---
+
+== Playground Overview
+
+Congratulations! You have reached the end of the guided exercises. Hopefully, you now have a better understanding of how you can bring your rulebooks to Ansible Automation Platform.
+
+This final challenge is a playground. You are free to use this space to try out anything else you'd like. This is a real, functional environment, and the repositories on the link:tab-1[Gitea] server are actively used. Go forth and experiment!
+
+[IMPORTANT]
+====
+.Environment Credentials
+====
+.Ansible Automation Platform (AAP)
+* **Username:** `admin`
+* **Password:** `ansible123!`
+
+.Gitea
+* **Username:** `student`
+* **Password:** `learn_ansible`
+====
+
+---
+
+== Ideas for Exploration
+
+Here are a few ideas to get you started in the playground.
+
+=== Create New Prometheus Alerts
+
+If you'd like to create new alerts for other metrics, you can go back to the `eda-alertmanager/prometheus/alert.rules` file in the link:tab-1[Gitea] project. When this file is modified and pushed, an event will be generated that causes Prometheus to restart and apply the new alerting rules.
+
+=== Experiment with Kafka
+
+The rulebooks are stored in the "eda-project" repository on link:tab-1[Gitea]. There's an example rulebook for Kafka in that project, so if you're comfortable configuring Kafka, give it a try! You can use the podman host within this environment to spin up a simple Kafka broker.
+
+A `podman-compose` file to get you started might look like this:
+
+[source,yaml]
+----
+version: '3'
+services:
+  zookeeper:
+    image: docker.io/bitnami/zookeeper:3.8.0
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+
+  kafka:
+    image: docker.io/bitnami/kafka:3.5.1
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - zookeeper
+----
+
+NOTE: The `podman-compose` file above is just a suggested starting point. It may require modifications and is not checked or maintained for accuracy.
+
+---
+
+== Useful Links
+
+* link:https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/using_automation_decisions/index[Event-Driven Ansible Product Documentation]
+* link:https://ansible.readthedocs.io/projects/rulebook/en/latest/[ansible-rulebook Upstream Documentation]
+
+== Troubleshooting
+
+If you have encountered an issue with this lab, please link:https://github.com/ansible/instruqt/issues/new?labels=eda-up-and-running-25&title=New+EDA+issue:+open-challenge+(Sandbox+id:+[[ Instruqt-Var key="SANDBOX" hostname="aap" ]])&assignees=cloin[open an issue on GitHub].
