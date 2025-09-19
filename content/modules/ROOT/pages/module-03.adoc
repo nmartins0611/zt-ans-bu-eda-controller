@@ -1,8 +1,8 @@
 = Lab Guide: Creating a Rulebook Activation
 :doctype: book
-:toc:
+:notoc:
 :toc-title: Table of Contents
-:sectnums:
+:nosectnums:
 :icons: font
 
 _A guide to creating and understanding Rulebook Activations in Event-Driven Ansible._
