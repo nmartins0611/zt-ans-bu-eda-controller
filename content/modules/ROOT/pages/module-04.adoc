@@ -1,8 +1,8 @@
 = Lab Guide: Generating and Responding to Events
 :doctype: book
-:toc:
+:notoc:
 :toc-title: Table of Contents
-:sectnums:
+:nosectnums:
 :icons: font
 
 _A guide to using Prometheus to generate an alert and Event-Driven Ansible to automatically remediate the issue._
