@@ -65,7 +65,7 @@ image::../assets/Oct-17-2024_at_13.06.48-image.png[Create project button, opts="
 | *Name* | `My EDA project`
 | *Description* | `Project containing Event-Driven Ansible content`
 | *Organization* | `Default`
-| *Source control URL* | `http://podman:3000/student/eda-project`
+| *Source control URL* | `http://gitea:3000/student/eda-project`
 | *Source control credential*| _Leave blank_ (This is a public repository)
 |===
 
