@@ -9,41 +9,42 @@ _An introduction to the concepts of Event-Driven Ansible and a guide to configur
 
 ---
 
-== About this Lab Environment
+== Lab Overview
+
+=== About this Lab Environment
 
 Each interactive lab environment has a set time limit, often 60 minutes, and may include an idle timeout. If your environment times out, your progress will be lost, but you can restart the lab at any time.
 
-All necessary credentials will be provided within the challenge text. They are also consolidated at the bottom of each exercise for easy access. If you experience any issues, a link to open a GitHub issue is available at the end of each challenge.
+[IMPORTANT]
+====
+.Environment Credentials
+====
+.Ansible Automation Platform (AAP)
+* **Username:** `admin`
+* **Password:** `ansible123!`
+
+.Gitea
+* **Username:** `student`
+* **Password:** `learn_ansible`
+====
 
 ---
 
-== Introduction to Automation Decisions
+== Introduction to Event-Driven Ansible
 
 Event-Driven Ansible allows you to codify your response to infrastructure and application events, making your automation more resilient and responsive. While Automation Controller (via playbooks) automates a response, Event-Driven Ansible (via rulebooks) automates the recognition of the event itself.
 
 In recent releases of Ansible Automation Platform (AAP), components are co-located in a unified UI. The integration of Event-Driven Ansible and Automation Controller is configured by creating a credential that **Automation Decisions** can use to execute templates in **Automation Execution**.
 
-.   **Log in to Ansible Automation Platform.**
-+
-    **Click** the `AAP` tab and log in using the following credentials:
-+
-    * **Username:** `admin`
-    * **Password:** `ansible123!`
+.   **Log in to Ansible Automation Platform.** **Click** the `AAP` tab and log in using the `admin` / `ansible123!` credentials.
 
-.   **Explore the UI.**
-+
-    After you log in, notice the menu sections for **Automation Execution** (Automation Controller) and **Automation Decisions** (Event-Driven Ansible Controller). As you work through this lab, you may need to navigate between these component menus.
-+
-    * **Automation Decisions:** This is where event conditions are defined in *Rulebooks* and activated via *Rulebook Activations*.
-    * **Automation Execution:** This is where the *actions* are defined as *Templates* that run playbooks.
+.   **Explore the UI.** After you log in, notice the menu sections for **Automation Execution** (Automation Controller) and **Automation Decisions** (Event-Driven Ansible Controller). As you work through this lab, you may need to navigate between these component menus.
+* **Automation Decisions:** This is where event conditions are defined in *Rulebooks* and activated via *Rulebook Activations*.
+* **Automation Execution:** This is where the *actions* are defined as *Templates* that run playbooks.
 
-.   **Create a credential for Automation Decisions.**
-+
-    You must first create a credential to allow the two components to communicate. **Navigate** to **Automation Decisions** → **Infrastructure** → **Credentials** and **click** the **Create credential** button.
+.   **Create a credential for Automation Decisions.** You must first create a credential to allow the two components to communicate. **Navigate** to **Automation Decisions** → **Infrastructure** → **Credentials** and **click** the **Create credential** button.
 
-.   **Enter the credential details.**
-+
-    **Fill** out the form with the following details:
+.   **Enter the credential details.** **Fill** out the form with the following details:
 +
 [cols="1,1,2a"]
 |===
@@ -66,7 +67,7 @@ In recent releases of Ansible Automation Platform (AAP), components are co-locat
 |
 
 | *Red Hat Ansible Automation Platform*
-| https://control.ansible.workshop/api/controller/
+| `https://control.ansible.workshop/api/controller/`
 | The URL for the Automation Execution component.
 
 | *Username*
@@ -85,31 +86,12 @@ In recent releases of Ansible Automation Platform (AAP), components are co-locat
 | Unchecked
 |
 |===
-
++
 NOTE: For more information, see the official documentation: link:https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/using_automation_decisions/eda-set-up-rhaap-credential-type#eda-set-up-rhaap-credential-type[Red Hat Ansible Automation Platform credential].
 
 Take a moment to look around the new UI, then proceed to the next challenge.
 
 ---
-
-== Lab Credentials and Bug Reporting
-
-=== Environment Credentials
-
-.AAP
-[source,text]
-----
-username: admin
-password: ansible123!
-----
-
-.Gitea
-[source,text]
-----
-username: student
-password: learn_ansible
-----
-
-=== Report a Bug
+== Troubleshooting
 
 If you experience issues with this lab, please link:https://github.com/ansible/instruqt/issues/new?labels=eda-up-and-running-25&title=New+EDA+issue:+eda-introduction+(Sandbox+id:+[[ Instruqt-Var key="SANDBOX" hostname="aap" ]])&assignees=cloin[open an issue on GitHub].
