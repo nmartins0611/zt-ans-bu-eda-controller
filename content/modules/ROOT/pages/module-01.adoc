@@ -66,7 +66,7 @@ In recent releases of Ansible Automation Platform (AAP), components are co-locat
 |
 
 | *Red Hat Ansible Automation Platform*
-| `[[ Instruqt-Var key="EDA_CREDENTIAL_URL" hostname="aap" ]]`
+| https://control.ansible.workshop/api/controller/
 | The URL for the Automation Execution component.
 
 | *Username*
