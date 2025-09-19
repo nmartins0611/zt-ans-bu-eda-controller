@@ -1,8 +1,8 @@
 = Lab Guide: Creating a Rulebook Activation
 :doctype: book
-:notoc:
+:toc:
 :toc-title: Table of Contents
-:nosectnums:
+:sectnums:
 :icons: font
 
 _A guide to creating and understanding Rulebook Activations in Event-Driven Ansible._
@@ -34,17 +34,11 @@ Event-Driven Ansible manages the restart of a Rulebook Activation if it stops du
 
 In this task, you will create and enable a Rulebook Activation.
 
-.   **Navigate to the Rulebook Activations page.**
-+
-    In the `AAP` tab, go to the left navigation menu and select **Automation Decisions** → **Rulebook Activations**.
+.   **Navigate to the Rulebook Activations page.** In the `AAP` tab, go to the left navigation menu and select **Automation Decisions** → **Rulebook Activations**.
 
-.   **Create a new Rulebook Activation.**
-+
-    **Click** the blue **Create rulebook activation** button.
+.   **Create a new Rulebook Activation** by clicking the blue **Create rulebook activation** button.
 
-.   **Enter the activation details.**
-+
-    **Fill** out the form with the following values:
+.   **Enter the activation details.** **Fill** out the form with the following values:
 +
 [cols="1,2,2a"]
 |===
@@ -93,25 +87,17 @@ In this task, you will create and enable a Rulebook Activation.
 +
 NOTE: For product documentation, see link:https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/using_automation_decisions/eda-rulebook-activations[Using automation decisions: Chapter 8. Rulebook activations].
 
-.   **Save the activation.**
-+
-    **Click** the **Create rulebook activation** button at the bottom of the form.
+.   **Save the activation** by clicking the **Create rulebook activation** button at the bottom of the form.
 +
 image::../assets/Nov-12-2024_at_13.56.18-image.png[Completed Rulebook Activation form, opts="border"]
 
-.   **Review the activation status.**
-+
-    You will be taken to a details page for the new Rulebook Activation. The *Activation status* may show as "Pending" or "Starting" but should transition to **Running** momentarily.
+.   **Review the activation status.** You will be taken to a details page for the new Rulebook Activation. The *Activation status* may show as "Pending" or "Starting" but should transition to **Running** momentarily.
 
-.   **Check the activation history.**
-+
-    **Select** the **History** tab at the top. Each time this Rulebook Activation starts or restarts, it gets a new ID and a new entry on this page. This is because each activation is a new `ansible-rulebook` process running inside a container.
+.   **Check the activation history.** **Select** the **History** tab at the top. Each time this Rulebook Activation starts or restarts, it gets a new ID and a new entry on this page. This is because each activation is a new `ansible-rulebook` process running inside a container.
 +
 image:../assets/Oct-17-2024_at_13.46.34-image.png[Running rulebook activation History tab, opts="border"]
 
-.   **View the debug output.**
-+
-    You can **click** the link for the running activation (e.g., "1 - Alertmanager events") to see the live debug output of the running rulebook.
+.   **View the debug output.** You can **click** the link for the running activation (e.g., "1 - Alertmanager events") to see the live debug output of the running rulebook.
 
 At this point, you have a rulebook that is actively listening for events from Alertmanager.
 
