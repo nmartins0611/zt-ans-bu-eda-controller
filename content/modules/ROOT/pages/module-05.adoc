@@ -1,8 +1,8 @@
 = Lab Guide: Using Event Streams
 :doctype: book
-:toc:
+:no9toc:
 :toc-title: Table of Contents
-:sectnums:
+:nosectnums:
 :icons: font
 
 _A guide to creating and using Event Streams in Event-Driven Ansible for simple and powerful event collection._
