@@ -1,8 +1,8 @@
 = Lab Guide: Using Event Streams
 :doctype: book
-:notoc:
+:toc:
 :toc-title: Table of Contents
-:nosectnums:
+:sectnums:
 :icons: font
 
 _A guide to creating and using Event Streams in Event-Driven Ansible for simple and powerful event collection._
@@ -38,13 +38,9 @@ In this lab, you will create an Event Stream to receive events from a Gitea proj
 
 Event Streams can be secured using tokens. Before creating the Event Stream, you will create a credential to provide it with basic authentication.
 
-.   **Navigate to the Credentials page.**
-+
-    In the `AAP` tab, go to **Infrastructure** → **Credentials**.
+.   **Navigate to the Credentials page.** In the `AAP` tab, go to **Infrastructure** → **Credentials**.
 
-.   **Create a new credential.**
-+
-    **Click** the **Create credential** button and use the following values:
+.   **Create a new credential.** **Click** the **Create credential** button and use the following values:
 +
 [cols="1,2,2a"]
 |===
@@ -77,13 +73,9 @@ NOTE: For product documentation, see link:https://docs.redhat.com/en/documentati
 
 Now you will create the Event Stream itself and attach the credential you just made.
 
-.   **Navigate to the Event Streams page.**
-+
-    In the `AAP` tab, go to **Automation Decisions** → **Event Streams**.
+.   **Navigate to the Event Streams page.** In the `AAP` tab, go to **Automation Decisions** → **Event Streams**.
 
-.   **Create a new Event Stream.**
-+
-    **Click** **Create event stream** and use the following values:
+.   **Create a new Event Stream.** **Click** **Create event stream** and use the following values:
 +
 [cols="1,2,2a"]
 |===
@@ -110,9 +102,7 @@ Your final Event Stream should look like this:
 +
 image::../assets/Nov-04-2024_at_16.28.37-image.png[Final event stream configuration, opts="border"]
 
-.   **Copy the Event Stream URL.**
-+
-    **Click** the "Copy to clipboard" button next to the URL. You will use this in the next step.
+.   **Copy the Event Stream URL.** **Click** the "Copy to clipboard" button next to the URL. You will use this in the next step.
 +
 image::../assets/Nov-12-2024_at_15.01.52-image.png[Event Stream copy to clipboard button, opts="border"]
 
@@ -122,9 +112,7 @@ NOTE: Each Event Stream gets a unique URL path, allowing multiple streams to use
 
 The Gitea project now needs to be modified to send events to the URL of the Event Stream you created.
 
-.   **Navigate to Webhook settings in Gitea.**
-+
-    In the `Gitea` tab, select the project **eda-alertmanager**. Click **Settings** → **Webhooks** and then **Add Webhook** → **Gitea**.
+.   **Navigate to Webhook settings in Gitea.** In the `Gitea` tab, select the project **eda-alertmanager**. Click **Settings** → **Webhooks** and then **Add Webhook** → **Gitea**.
 +
 image::../assets/Nov-11-2024_at_13.39.26-image.png[Add a new webhook in Gitea, opts="border"]
 
@@ -157,9 +145,7 @@ image::../assets/Nov-11-2024_at_13.39.26-image.png[Add a new webhook in Gitea, o
 +
 image::../assets/Nov-12-2024_at_15.05.10-image.png[New webhook form, opts="border"]
 
-.   **Test the webhook delivery.**
-+
-    **Click** the link to the webhook you just created. At the bottom, click the **Test Delivery** button. Return to the `AAP` tab and check your Event Stream. The "Events received" count should now be `1`.
+.   **Test the webhook delivery.** **Click** the link to the webhook you just created. At the bottom, click the **Test Delivery** button. Return to the `AAP` tab and check your Event Stream. The "Events received" count should now be `1`.
 +
 image::../assets/Nov-11-2024_at_14.03.49-image.png[Gitea test webhook delivery, opts="border"]
 
@@ -167,9 +153,7 @@ image::../assets/Nov-11-2024_at_14.03.49-image.png[Gitea test webhook delivery, 
 
 Now, create a Rulebook Activation to listen to the events received on the Event Stream.
 
-.   **Navigate to Rulebook Activations.**
-+
-    In the `AAP` tab, go to **Automation Decisions** → **Rulebook Activations**.
+.   **Navigate to Rulebook Activations.** In the `AAP` tab, go to **Automation Decisions** → **Rulebook Activations**.
 
 .   **Create a new rulebook activation.**
 +
@@ -206,13 +190,9 @@ image:../assets/Nov-11-2024_at_14.24.37-image.png[Final Rulebook Activation scre
 
 Let's put this integration to work by modifying a file, which will trigger an automated response.
 
-.   **Modify the Prometheus alert rules.**
-+
-    In the `Gitea` tab, navigate to the **eda-alertmanager** project and open the file `prometheus/alert.rules`. **Click** the pencil icon to edit it.
+.   **Modify the Prometheus alert rules.** In the `Gitea` tab, navigate to the **eda-alertmanager** project and open the file `prometheus/alert.rules`. **Click** the pencil icon to edit it.
 
-.   **Add a new alert rule.**
-+
-    **Modify** the content of this file to match the following, then scroll to the bottom and commit the changes.
+.   **Add a new alert rule.** **Modify** the content of this file to match the following, then scroll to the bottom and commit the changes.
 +
 [source,yaml]
 ----
@@ -240,9 +220,7 @@ groups:
 +
 This push event will kick off a new job template that updates the Prometheus configuration.
 
-.   **Verify the new alert in Prometheus.**
-+
-    Once the job template is complete, go to the `Prometheus` tab. You should see a new alert under the "Alerts" section for low disk space.
+.   **Verify the new alert in Prometheus.** Once the job template is complete, go to the `Prometheus` tab. You should see a new alert under the "Alerts" section for low disk space.
 +
 image::../assets/Nov-12-2024_at_08.09.50-image.png[New disk space alert in Prometheus, opts="border"]
 
@@ -250,9 +228,7 @@ image::../assets/Nov-12-2024_at_08.09.50-image.png[New disk space alert in Prome
 
 Now, let's trigger the new alert.
 
-.   **Fill up the disk space on a RHEL node.**
-+
-    From either the `RHEL1` or `RHEL2` tab, **run** this set of commands:
+.   **Fill up the disk space on a RHEL node.** From either the `RHEL1` or `RHEL2` tab, **run** this set of commands:
 +
 [source,bash]
 ----
@@ -265,13 +241,9 @@ The output will show that the device mounted to `/` is now over 80% full, which 
 +
 image::../assets/Nov-12-2024_at_08.14.30-image.png[Showing low disk space on / volume, opts="border"]
 
-.   **Observe the automated remediation.**
-+
-    It may take a couple of minutes for the alert to fire. Once it does, the event will be sent to AAP. A job template will run in response, resolving the storage issue by removing the 15G file.
+.   **Observe the automated remediation.** It may take a couple of minutes for the alert to fire. Once it does, the event will be sent to AAP. A job template will run in response, resolving the storage issue by removing the 15G file.
 
-.   **Review the Rule Audit.**
-+
-    Navigate to **Automation Decisions** → **Rule Audit** in AAP. You will see both the disk space alert "FIRING" and "RESOLVED" events.
+.   **Review the Rule Audit.** Navigate to **Automation Decisions** → **Rule Audit** in AAP. You will see both the disk space alert "FIRING" and "RESOLVED" events.
 +
 image::../assets/Nov-12-2024_at_15.16.25-image.png[Disk space rule audit, opts="border"]
 
