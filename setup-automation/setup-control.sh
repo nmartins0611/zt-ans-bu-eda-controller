@@ -325,6 +325,19 @@ tee /tmp/setup.yml << EOF
     vars:
       sandbox_id: "{{ lookup('env', '_SANDBOX_ID') }}"
 
+  - name: Create EDA Decision Environment
+    ansible.eda.decision_environment:
+      name: "Alertmanager DE"
+      description: "Network/Kafka/Alertmanager"
+      image_url: "quay.io/nmartins/network_de"
+   #   credential: "Example Credential"
+      organization_name: Default
+      state: present
+      controller_host: https://localhost
+      controller_username: admin
+      controller_password: ansible123!
+      validate_certs: false
+
   - name: (DECISIONS) Restart EDA services as rhel user
     become: true
     become_user: rhel
