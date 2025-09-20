@@ -316,14 +316,14 @@ tee /tmp/setup.yml << EOF
   #     controller_password: ansible123!
   #     validate_certs: false
 
-  - name: (DECISIONS) Update EVENT_STREAM_BASE_URL in settings.yaml
-    ansible.builtin.lineinfile:
-      path: "/home/rhel/aap/eda/etc/settings.yaml"
-      regexp: "^EVENT_STREAM_BASE_URL:.*"
-      line: "EVENT_STREAM_BASE_URL: 'https://{{ ansible_hostname }}.{{ sandbox_id }}.instruqt.io/eda-event-streams'"
-      backrefs: yes
-    vars:
-      sandbox_id: "{{ lookup('env', '_SANDBOX_ID') }}"
+  # - name: (DECISIONS) Update EVENT_STREAM_BASE_URL in settings.yaml
+  #   ansible.builtin.lineinfile:
+  #     path: "/home/rhel/aap/eda/etc/settings.yaml"
+  #     regexp: "^EVENT_STREAM_BASE_URL:.*"
+  #     line: "EVENT_STREAM_BASE_URL: 'https://{{ ansible_hostname }}.{{ sandbox_id }}.instruqt.io/eda-event-streams'"
+  #     backrefs: yes
+  #   vars:
+  #     sandbox_id: "{{ lookup('env', '_SANDBOX_ID') }}"
 
   - name: Create EDA Decision Environment
     ansible.eda.decision_environment:
