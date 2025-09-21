@@ -1,5 +1,12 @@
 #!/bin/bash
 
+nmcli connection add type ethernet con-name enp2s0 ifname enp2s0 ipv4.addresses 192.168.1.10/24 ipv4.method manual connection.autoconnect yes
+nmcli connection up enp2s0
+echo "192.168.1.10 control.lab control" >> /etc/hosts
+echo "192.168.1.11 podman.lab podman" >> /etc/hosts
+echo "192.168.1.12 rhel-1.lab podman" >> /etc/hosts
+echo "192.168.1.13 rhel-2.lab podman" >> /etc/hosts
+
 retry() {
     for i in {1..3}; do
         echo "Attempt $i: $2"
