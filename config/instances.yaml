@@ -148,6 +148,20 @@ virtualmachines:
         value: "isolated"
     networks:
       - default
+    services:
+      - name: rhel1-nodeexport9100
+        ports:
+          - port: 9100
+            protocol: TCP
+            targetPort: 9100
+            name: rhel-1       
+    routes:
+      - name: rhel1-nodeexport
+        host: rhel-1
+        service: podman-nodeexport9100
+        targetPort: 9100
+        tls: true
+        tls_termination: Edge           
     userdata: |-
       #cloud-config
       user: rhel
@@ -167,6 +181,20 @@ virtualmachines:
         value: "isolated"
     networks:
       - default
+    services:
+      - name: rhel2-nodeexport9100
+        ports:
+          - port: 9100
+            protocol: TCP
+            targetPort: 9100
+            name: rhel-2          
+    routes:
+      - name: rhel2-nodeexport
+        host: rhel-2
+        service: podman-nodeexport9100
+        targetPort: 9100
+        tls: true
+        tls_termination: Edge                 
     userdata: |-
       #cloud-config
       user: rhel
@@ -204,7 +232,7 @@ virtualmachines:
           - port: 9100
             protocol: TCP
             targetPort: 9100
-            name: podman-nodeexp            
+            name: podman          
     routes:
       - name: podman-alertmanager
         host: alertmanager
@@ -219,7 +247,7 @@ virtualmachines:
         tls: true
         tls_termination: Edge
       - name: podman-nodeexport
-        host: podman-nodeexp
+        host: podman
         service: podman-nodeexport9100
         targetPort: 9100
         tls: true
