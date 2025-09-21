@@ -38,7 +38,7 @@ Decision Environments are container images that bundle all the necessary depende
 
 .   **Explore the default Decision Environment.** In the `AAP` tab, navigate to **Automation Decisions** → **Decision Environments**. You will see a pre-configured environment named "Default Decision Environment." This environment is distributed by Red Hat and contains the `ansible.eda` collection, which includes source plugins for sources like AWS SQS, Kafka, and Alertmanager (which you will use soon).
 +
-image::../assets/Oct-17-2024_at_13.03.31-image.png[Decision Environments list view, opts="border"]
+image::Oct-17-2024_at_13.03.31-image.png[Decision Environments list view, opts="border"]
 
 NOTE: For more information, see the official documentation: link:https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/using_automation_decisions/eda-decision-environments[Using automation decisions: Chapter 5. Decision environments].
 
@@ -52,7 +52,7 @@ NOTE: For more information, see the official documentation: link:https://docs.re
 
 .   **Create a new project** by clicking the **Create project** button.
 +
-image::../assets/Oct-17-2024_at_13.06.48-image.png[Create project button, opts="border"]
+image::Oct-17-2024_at_13.06.48-image.png[Create project button, opts="border"]
 
 .   **Enter the project details.** **Fill** out the form with the following details:
 +
@@ -68,7 +68,7 @@ image::../assets/Oct-17-2024_at_13.06.48-image.png[Create project button, opts="
 
 .   **Save and sync the project.** **Click** **Create project**. If successful, the status should show **Completed**. If you make any changes to the files in the repository, you will need to re-sync the project using the "Sync project" button.
 +
-image::../assets/Oct-17-2024_at_13.10.35-image.png[Successful project sync, opts="border"]
+image::Oct-17-2024_at_13.10.35-image.png[Successful project sync, opts="border"]
 +
 NOTE: For more information, see the official documentation: link:https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/using_automation_decisions/eda-projects[Using automation decisions: Chapter 4. Projects].
 
