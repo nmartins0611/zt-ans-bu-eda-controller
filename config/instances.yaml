@@ -81,6 +81,7 @@ virtualmachines:
         value: "isolated"
     networks:
       - default
+      - secondary
     userdata: |-
       #cloud-config
       user: rhel
@@ -148,6 +149,7 @@ virtualmachines:
         value: "isolated"
     networks:
       - default
+      - secondary      
     services:
       - name: rhel1-nodeexport9100
         ports:
@@ -181,6 +183,7 @@ virtualmachines:
         value: "isolated"
     networks:
       - default
+      - secondary
     services:
       - name: rhel2-nodeexport9100
         ports:
@@ -214,6 +217,7 @@ virtualmachines:
         value: "isolated"
     networks:
       - default
+      - secondary
     services:
       - name: podman-alertmanager9093
         ports:
