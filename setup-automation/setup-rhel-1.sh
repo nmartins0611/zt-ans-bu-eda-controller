@@ -4,8 +4,8 @@ nmcli connection add type ethernet con-name enp2s0 ifname enp2s0 ipv4.addresses 
 nmcli connection up enp2s0
 echo "192.168.1.10 control.lab control" >> /etc/hosts
 echo "192.168.1.11 podman.lab podman" >> /etc/hosts
-echo "192.168.1.12 rhel-1.lab podman" >> /etc/hosts
-echo "192.168.1.13 rhel-2.lab podman" >> /etc/hosts
+echo "192.168.1.12 rhel-1.lab rhel-1" >> /etc/hosts
+echo "192.168.1.13 rhel-2.lab rhel-2" >> /etc/hosts
 
 retry() {
     for i in {1..3}; do
