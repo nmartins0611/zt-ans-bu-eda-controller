@@ -20,6 +20,12 @@ ingress:
     port: 9093
   - protocol: TCP
     port: 9100
+  - protocol: TCP
+    port: 5050
+  - protocol: TCP
+    port: 5000
+  - protocol: TCP
+    port: 9092
 egress:
 - ports:
   - protocol: TCP
@@ -40,3 +46,9 @@ egress:
     port: 9093
   - protocol: TCP
     port: 9100
+  - protocol: TCP
+    port: 5050
+  - protocol: TCP
+    port: 5000
+  - protocol: TCP
+    port: 9092
