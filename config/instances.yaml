@@ -207,13 +207,13 @@ virtualmachines:
             name: podman-nodeexp            
     routes:
       - name: podman-alertmanager
-        host: podman-alert
+        host: alertmanager
         service: podman-alertmanager9093
         targetPort: 9093
         tls: true
         tls_termination: Edge
       - name: podman-prometheus
-        host: podman-prome
+        host: prometheus
         service: podman-prometheus9090
         targetPort: 9090
         tls: true
