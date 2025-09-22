@@ -26,6 +26,8 @@ ingress:
     port: 5000
   - protocol: TCP
     port: 9092
+  - protocol: TCP
+    port: 8084
 egress:
 - ports:
   - protocol: TCP
@@ -52,3 +54,6 @@ egress:
     port: 5000
   - protocol: TCP
     port: 9092
+  - protocol: TCP
+    port: 8084    
+    
