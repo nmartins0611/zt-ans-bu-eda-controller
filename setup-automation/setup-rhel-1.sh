@@ -1,7 +1,8 @@
 #!/bin/bash
 
-nmcli connection add type ethernet con-name enp2s0 ifname enp2s0 ipv4.addresses 192.168.1.12/24 ipv4.method manual connection.autoconnect yes
-nmcli connection up enp2s0
+
+nmcli connection add type ethernet con-name eth1 ifname eth1 ipv4.addresses 192.168.1.12/24 ipv4.method manual connection.autoconnect yes
+nmcli connection up eth1
 echo "192.168.1.10 control.lab control" >> /etc/hosts
 echo "192.168.1.11 podman.lab podman" >> /etc/hosts
 echo "192.168.1.12 rhel-1.lab rhel-1" >> /etc/hosts
