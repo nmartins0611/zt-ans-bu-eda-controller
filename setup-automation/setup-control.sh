@@ -11,6 +11,9 @@ echo "192.168.1.13 rhel-2.lab rhel-2" >> /etc/hosts
 systemctl stop systemd-tmpfiles-setup.service
 systemctl disable systemd-tmpfiles-setup.service
 
+systemctl stop firewalld
+systemctl disable firewalld
+
 # Install collection(s)
 ansible-galaxy collection install ansible.eda
 
