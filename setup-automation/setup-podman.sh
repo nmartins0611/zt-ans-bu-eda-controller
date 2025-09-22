@@ -34,15 +34,10 @@ tee /tmp/setup.yml << EOF
 ### Podman setup 
 ###
 - name: Setup podman and services
-  hosts: podman
+  hosts: localhost
   gather_facts: no
   #become: true
   tasks:
-
-    - name: Add search to resolv.conf
-      ansible.builtin.shell:
-        cmd: echo "search $_SANDBOX_ID.svc.cluster.local." >> /etc/resolv.conf
-      become: true
 
     - name: Install EPEL
       ansible.builtin.package:
@@ -57,7 +52,6 @@ tee /tmp/setup.yml << EOF
         name: crun
         state: latest
       become: true
-
 
     - name: Install required packages
       ansible.builtin.package:
@@ -114,8 +108,8 @@ tee /tmp/setup.yml << EOF
         force_basic_auth: yes
         validate_certs: no
       loop:
-        - {name: 'eda-project', url: 'https://github.com/cloin/eda-project-basic.git'}
-        - {name: 'eda-alertmanager', url: 'https://github.com/cloin/eda-alertmanager.git'}
+        - {name: 'eda-project', url: 'https://github.com/ansible-tmm/eda-project-basic.git'}
+        - {name: 'eda-alertmanager', url: 'https://github.com/ansible-tmm/eda-alertmanager.git'}
 
     - name: Set the default branch to aap25 for migrated repositories
       ansible.builtin.uri:
