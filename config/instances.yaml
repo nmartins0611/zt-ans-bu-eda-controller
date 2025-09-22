@@ -238,6 +238,12 @@ virtualmachines:
             protocol: TCP
             targetPort: 9100
             name: podman          
+      - name: podman-gitea
+        ports:
+          - port: 3000
+            protocol: TCP
+            targetPort: 3000
+            name: podman-gitea                    
     routes:
       - name: podman-alertmanager
         host: alertmanager
@@ -256,7 +262,13 @@ virtualmachines:
         service: podman-nodeexport9100
         targetPort: 9100
         tls: true
-        tls_termination: Edge           
+        tls_termination: Edge
+      - name: podman-gitea
+        host: podman-gitea
+        service: podman-gitea
+        targetPort: 3000
+        tls: true
+        tls_termination: Edge        
     userdata: |-
       #cloud-config
       user: rhel
