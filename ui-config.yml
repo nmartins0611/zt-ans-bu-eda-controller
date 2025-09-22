@@ -46,6 +46,7 @@ tabs:
       - module-04
       - module-05
       - module-06
+    external: true
   - name: Prometheus
     url: https://prometheus-${guid}.${domain}/
     modules:
