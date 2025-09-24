@@ -158,7 +158,7 @@ tee /tmp/setup.yml << EOF
 EOF
 
 
-ansible-playbook /tmp/setup.yml
+#ansible-playbook /tmp/setup.yml
 
 
 
