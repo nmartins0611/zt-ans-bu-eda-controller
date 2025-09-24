@@ -39,13 +39,13 @@ tabs:
     modules:
       - module-01
   - name: Gitea
-    url: https://gitea-${guid}.${domain}/
+    url: https://podman-gitea-${guid}.${domain}/
     modules:
       - module-02
       - module-03
-      # - module-04
-      # - module-05
-      # - module-06
+      - module-04
+      - module-05
+      - module-06
     external: true
   - name: Prometheus
     url: https://prometheus-${guid}.${domain}/
@@ -70,12 +70,12 @@ tabs:
     modules:
       - module-05
       - module-06
-  - name: Gitea
-    url: https://podman-gitea-${guid}.${domain}/
-    modules:
-      - module-04
-      - module-05
-      - module-06
+  # - name: Gitea
+  #   url: https://podman-gitea-${guid}.${domain}/
+  #   modules:
+  #     - module-04
+  #     - module-05
+  #     - module-06
   # - name: Windows RDP
   #   url: https://windows-ironrdp-${guid}.${domain}/
   #   external: false
