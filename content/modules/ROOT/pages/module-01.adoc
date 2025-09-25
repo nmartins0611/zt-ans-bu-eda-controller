@@ -16,13 +16,15 @@ _An introduction to the concepts of Event-Driven Ansible and a guide to configur
 Each interactive lab environment has a set time limit, often 60 minutes, and may include an idle timeout. If your environment times out, your progress will be lost, but you can restart the lab at any time.
 
 [IMPORTANT]
-.Environment Credentials
+.Ansible Automation Platform (AAP) Credentials
 ====
-*Ansible Automation Platform (AAP)*
 * **Username:** `admin`
 * **Password:** `ansible123!`
+====
 
-*Gitea*
+[IMPORTANT]
+.Gitea Credentials
+====
 * **Username:** `student`
 * **Password:** `learn_ansible`
 ====
