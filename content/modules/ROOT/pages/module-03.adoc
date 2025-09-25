@@ -69,7 +69,7 @@ In this task, you will create and enable a Rulebook Activation.
 | This credential is used to execute job templates in the automation controller.
 
 | *Decision environment*
-| `Default Decision Environment`
+| `Workshop Decision Environment`
 |
 
 | *Restart policy*
