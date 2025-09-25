@@ -16,14 +16,13 @@ _An introduction to the concepts of Event-Driven Ansible and a guide to configur
 Each interactive lab environment has a set time limit, often 60 minutes, and may include an idle timeout. If your environment times out, your progress will be lost, but you can restart the lab at any time.
 
 [IMPORTANT]
-====
 .Environment Credentials
 ====
-.Ansible Automation Platform (AAP)
+*Ansible Automation Platform (AAP)*
 * **Username:** `admin`
 * **Password:** `ansible123!`
 
-.Gitea
+*Gitea*
 * **Username:** `student`
 * **Password:** `learn_ansible`
 ====
@@ -36,15 +35,12 @@ Event-Driven Ansible allows you to codify your response to infrastructure and ap
 
 In recent releases of Ansible Automation Platform (AAP), components are co-located in a unified UI. The integration of Event-Driven Ansible and Automation Controller is configured by creating a credential that **Automation Decisions** can use to execute templates in **Automation Execution**.
 
-.   **Log in to Ansible Automation Platform.** **Click** the `AAP` tab and log in using the `admin` / `ansible123!` credentials.
-
-.   **Explore the UI.** After you log in, notice the menu sections for **Automation Execution** (Automation Controller) and **Automation Decisions** (Event-Driven Ansible Controller). As you work through this lab, you may need to navigate between these component menus.
+. **Log in to Ansible Automation Platform.** **Click** the `AAP` tab and log in using the `admin` / `ansible123!` credentials.
+. **Explore the UI.** After you log in, notice the menu sections for **Automation Execution** (Automation Controller) and **Automation Decisions** (Event-Driven Ansible Controller). As you work through this lab, you may need to navigate between these component menus.
 * **Automation Decisions:** This is where event conditions are defined in *Rulebooks* and activated via *Rulebook Activations*.
 * **Automation Execution:** This is where the *actions* are defined as *Templates* that run playbooks.
-
-.   **Create a credential for Automation Decisions.** You must first create a credential to allow the two components to communicate. **Navigate** to **Automation Decisions** → **Infrastructure** → **Credentials** and **click** the **Create credential** button.
-
-.   **Enter the credential details.** **Fill** out the form with the following details:
+. **Create a credential for Automation Decisions.** You must first create a credential to allow the two components to communicate. **Navigate** to **Automation Decisions** → **Infrastructure** → **Credentials** and **click** the **Create credential** button.
+. **Enter the credential details.** **Fill** out the form with the following details:
 +
 [cols="1,1,2a"]
 |===
@@ -92,6 +88,7 @@ NOTE: For more information, see the official documentation: link:https://docs.re
 Take a moment to look around the new UI, then proceed to the next challenge.
 
 ---
+
 == Troubleshooting
 
-If you experience issues with this lab, please link:https://github.com/ansible/instruqt/issues/new?labels=eda-up-and-running-25&title=New+EDA+issue:+eda-introduction+(Sandbox+id:+[[ Instruqt-Var key="SANDBOX" hostname="aap" ]])&assignees=cloin[open an issue on GitHub].
+If you experience issues with this lab, please link:https://github.com/ansible/workshops/issues
