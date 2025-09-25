@@ -23,14 +23,15 @@ In this example, you'll use Prometheus to monitor two RHEL nodes. When an alert 
 ====
 
 [IMPORTANT]
+.Ansible Automation Platform (AAP) Credentials
 ====
-.Environment Credentials
-====
-.Ansible Automation Platform (AAP)
 * **Username:** `admin`
 * **Password:** `ansible123!`
+====
 
-.Gitea
+[IMPORTANT]
+.Gitea Credentials
+====
 * **Username:** `student`
 * **Password:** `learn_ansible`
 ====
@@ -41,13 +42,13 @@ In this example, you'll use Prometheus to monitor two RHEL nodes. When an alert 
 
 You will now walk through the entire event-driven workflow: examining an alert in Prometheus, triggering it by disabling SELinux, and observing the automated remediation.
 
-.   **Explore the Prometheus alert.** Navigate to the link:tab-2[Prometheus] tab. At the top, click **Alerts**. You will see a single alert configured called "selinux disabled." **Expand** this alert by clicking the small arrow to its left.
+. **Explore the Prometheus alert.** Navigate to the link:tab-2[Prometheus] tab. At the top, click **Alerts**. You will see a single alert configured called "selinux disabled." **Expand** this alert by clicking the small arrow to its left.
 +
 image::image.png[Prometheus Alerts tab, opts="border"]
 +
 The line starting with `expr` is the condition that Prometheus is evaluating. It means, "trigger an alert when the metric `node_selinux_current_mode` is equal to `0` (disabled)." If you click the `expr` link, you will be taken to the Graph page, which will show an "Empty query result" because SELinux is currently enabled on both nodes.
 
-.   **Disable SELinux on a RHEL node.** Go to either the link:tab-3[RHEL 1] tab or the link:tab-4[RHEL 2] tab and **run** the following commands:
+. **Disable SELinux on a RHEL node.** Go to either the link:tab-3[RHEL 1] tab or the link:tab-4[RHEL 2] tab and **run** the following commands:
 +
 [source,bash]
 ----
@@ -67,21 +68,21 @@ Enforcing
 Permissive
 ----
 
-.   **Observe the active alert in Prometheus.** Return to the link:tab-2[Prometheus] tab and click **Alerts**. The "selinux disabled" rule should now show "(1 active)". If it doesn't, wait a few seconds and refresh the page. When you expand the rule, the state will show as "PENDING" and then transition to "FIRING." Once it is "FIRING," the event is sent to Ansible Automation Platform.
+. **Observe the active alert in Prometheus.** Return to the link:tab-2[Prometheus] tab and click **Alerts**. The "selinux disabled" rule should now show "(1 active)". If it doesn't, wait a few seconds and refresh the page. When you expand the rule, the state will show as "PENDING" and then transition to "FIRING." Once it is "FIRING," the event is sent to Ansible Automation Platform.
 +
 image::image.png[SELinux alert firing in Prometheus, opts="border"]
 
-.   **Observe the Rule Audit in AAP.** It may take a minute or two for the alert to fire. Once it does, go to the link:tab-0[AAP] tab and navigate to **Automation Decisions** → **Rule Audit**. You will find a new entry named "SELinux was disabled (firing)". **Click** on it to view the event payload in the *Events* tab and the job that was run in the *Actions* tab.
+. **Observe the Rule Audit in AAP.** It may take a minute or two for the alert to fire. Once it does, go to the link:tab-0[AAP] tab and navigate to **Automation Decisions** → **Rule Audit**. You will find a new entry named "SELinux was disabled (firing)". **Click** on it to view the event payload in the *Events* tab and the job that was run in the *Actions* tab.
 +
 image::image.png[Rule Audit showing the SELinux event and action, opts="border"]
 
-.   **Observe the automated remediation job.** In the `AAP` tab, navigate to **Automation Execution** → **Jobs**. You will see a new job called "Apply baseline." This job template was triggered by the event and will re-enable SELinux. **Click** the job to view its details. Notice in the *Details* tab that a **Limit** was applied to the job.
+. **Observe the automated remediation job.** In the `AAP` tab, navigate to **Automation Execution** → **Jobs**. You will see a new job called "Apply baseline." This job template was triggered by the event and will re-enable SELinux. **Click** the job to view its details. Notice in the *Details* tab that a **Limit** was applied to the job.
 +
 image::image.png[Job Details showing a limit applied to the host, opts="border"]
 +
 The running rulebook extracted the hostname from the event payload and used that value to limit the playbook execution to only the node where SELinux was disabled.
 
-.   **Verify the fix.** Go back to the RHEL node where you disabled SELinux and **run** the following command:
+. **Verify the fix.** Go back to the RHEL node where you disabled SELinux and **run** the following command:
 +
 [source,bash]
 ----
@@ -90,7 +91,7 @@ sudo getenforce
 +
 The output should now be "Enforcing."
 
-.   **Review the resolved event.** Because SELinux was re-enabled, the alert in Prometheus will clear. When this happens, Alertmanager sends a "resolved" event to AAP. The Rule Audit page will now show both the "firing" and the "resolved" events.
+. **Review the resolved event.** Because SELinux was re-enabled, the alert in Prometheus will clear. When this happens, Alertmanager sends a "resolved" event to AAP. The Rule Audit page will now show both the "firing" and the "resolved" events.
 +
 image::Nov-12-2024_at_14.43.58-image.png[Rule Audit showing both firing and resolved events, opts="border"]
 
@@ -106,4 +107,4 @@ Moving right along to the next challenge then! 👉
 
 == Troubleshooting
 
-If you have encountered an issue with this lab, please link:https://github.com/ansible/instruqt/issues/new?labels=eda-up-and-running-25&title=New+EDA+issue:+generate-events+(Sandbox+id:+[[ Instruqt-Var key="SANDBOX" hostname="aap" ]])&assignees=cloin[open an issue on GitHub].
+If you have encountered an issue with this lab, please link:https://github.com/ansible/workshops/issues
