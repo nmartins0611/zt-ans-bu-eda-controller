@@ -3,4 +3,3 @@
 * xref:module-03.adoc[Rulebook Activations]
 * xref:module-04.adoc[Observe some events]
 * xref:module-05.adoc[Event Streams]
-* xref:module-06.adoc[Open challenge]
