@@ -338,7 +338,7 @@ tee /tmp/setup.yml << EOF
 
   - name: Create EDA Decision Environment
     ansible.eda.decision_environment:
-      name: "Alertmanager DE"
+      name: "Workshop Decision Environment"
       description: "Network/Kafka/Alertmanager"
       image_url: "quay.io/nmartins/network_de"
    #   credential: "Example Credential"
