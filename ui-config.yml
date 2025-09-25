@@ -19,9 +19,6 @@ antora:
     - name: module-05
       label: "Event Streams"
       solveButton: false
-    - name: module-06
-      label: "Open challenge"
-      solveButton: false
 
 tabs:
   - name: aap
@@ -32,7 +29,6 @@ tabs:
       - module-03
       - module-04
       - module-05
-      - module-06    
     external: false
   - name: ">_ Terminal"
     url: /wetty
@@ -45,47 +41,23 @@ tabs:
       - module-03
       - module-04
       - module-05
-      - module-06
     external: false
   - name: Prometheus
     url: https://prometheus-${guid}.${domain}/
     modules:
       - module-04
       - module-05
-      - module-06
   - name: ">_ RHEL1"
     url: /wetty_rhel-1
     modules:
       - module-04
       - module-05
-      - module-06
   - name: ">_ RHEL2"
     url: /wetty_rhel-2
     modules:
       - module-04
       - module-05
-      - module-06
   - name: ">_ Podman"
     url: /wetty_podman
     modules:
       - module-05
-      - module-06
-  # - name: Gitea
-  #   url: https://podman-gitea-${guid}.${domain}/
-  #   modules:
-  #     - module-04
-  #     - module-05
-  #     - module-06
-  # - name: Windows RDP
-  #   url: https://windows-ironrdp-${guid}.${domain}/
-  #   external: false
-  # - name: ">_ control"
-  #   url: /wetty
-  # - name: ">_ node01"
-  #   url: /wetty_node01
-  # - name: ">_ node02"
-  #   url: /wetty_node02
-  # - name: ">_ node03"
-  #   url: /wetty_node03
-  # - name: Cloud (PoC)
-  #   url: /cloud
