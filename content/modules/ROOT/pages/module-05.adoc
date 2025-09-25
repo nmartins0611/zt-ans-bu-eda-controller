@@ -233,7 +233,7 @@ Now, let's trigger the new alert.
 [source,bash]
 ----
 df -h
-sudo fallocate -l 15G /bigfile
+sudo fallocate -l 25G /bigfile
 df -h
 ----
 +
