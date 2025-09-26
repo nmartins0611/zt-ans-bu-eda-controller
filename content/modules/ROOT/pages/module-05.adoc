@@ -238,7 +238,7 @@ The output will show that the device mounted to `/` is now over 80% full, which 
 +
 image::Nov-12-2024_at_08.14.30-image.png[Showing low disk space on / volume, opts="border"]
 
-. **Observe the automated remediation.** It may take a couple of minutes for the alert to fire. Once it does, the event will be sent to AAP. A job template will run in response, resolving the storage issue by removing the 15G file.
+. **Observe the automated remediation.** It may take a couple of minutes for the alert to fire. Once it does, the event will be sent to AAP. A job template will run in response, resolving the storage issue by removing the 25G file.
 . **Review the Rule Audit.** Navigate to **Automation Decisions** → **Rule Audit** in AAP. You will see both the disk space alert "FIRING" and "RESOLVED" events.
 +
 image::Nov-12-2024_at_15.16.25-image.png[Disk space rule audit, opts="border"]
@@ -249,9 +249,6 @@ image::Nov-12-2024_at_15.16.25-image.png[Disk space rule audit, opts="border"]
 
 You just created an Event Stream and used it to receive events from a Git project, which in turn updated your monitoring. You then triggered an alert from that monitoring, which was automatically remediated.
 
-== Next Steps
-
-Onto the next challenge! 👉
 
 == Troubleshooting
 
